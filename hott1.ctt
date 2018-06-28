@@ -100,8 +100,6 @@ ifNotAandNotBThenNotAorB (A B : U)
   inl a -> (pr1Tuple (not A) (not B) g) a
   inr b -> (pr2Tuple (not A) (not B) g) b
 
-const (A B : U) (a : A) (b : B) : A = a
-
 ifNotAorBThenNotAandNotB (A B : U) (x : Coproduct A B)
   (e : Empty) : Tuple (A -> Empty) (B -> Empty) =
   recCoproduct A B (Tuple (A -> Empty) (B -> Empty))
@@ -225,9 +223,10 @@ add (m : Nat) : Nat -> Nat = split
   succ n -> succ (add m n)
 
 -- The same thing
-mult (m : Nat) : Nat -> Nat = split
-  zero -> zero
-  succ n -> add n (mult m n)
+mult : Nat -> Nat -> Nat = split
+  zero -> const Nat Nat zero
+  succ n -> \(m : Nat) ->
+    add m (mult n m)
 
 addZero : (a : Nat) -> Path Nat (add zero a) a = split
   zero -> <_> zero
@@ -253,6 +252,22 @@ addA (a b : Nat) : (c : Nat) -> Path Nat (add a (add b c)) (add (add a b) c) = s
 
 commutativeMonoidOverNatAdd : isCommutativeMonoid Nat =
   ((add, zero, addA, zeroIdentityNat), addComm)
+
+multRightZero : (a : Nat) -> Path Nat zero (mult a zero) = split
+  zero -> refl Nat zero
+  succ a -> <i> comp (refl U Nat) ((addZero (mult a zero)) @ -i)
+                     [ (i = 0) -> <j> (multRightZero a) @ -j,
+		       (i = 1) -> refl Nat (add zero (mult a zero)) ]
+
+--addRightApplication (a b c : Nat) (p : Path Nat b c) :
+--  Path Nat (add a b) (add a c) = <i> add a (p @ i)
+
+--multDistribRightSwapped (b c : Nat) : (a : Nat) ->
+--  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
+--  zero -> <i> comp (refl U Nat) (mult (addZero b @ i) c)
+--                   [ (i = 0) -> refl Nat (mult (add zero b) c),
+--                     (i = 1) -> <j> addZero (mult b c) @ -j ]
+--  succ a -> ?
 
 --multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
 --  zero -> refl Nat zero

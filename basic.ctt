@@ -6,3 +6,5 @@ refl (A : U) (a : A) : Path A a a = <_> a
 
 swap (A B C : U) (g : A -> B -> C) : B -> A -> C =
   \(b : B) (a : A) -> g a b
+
+const (A B : U) (a : A) (b : B) : A = a
