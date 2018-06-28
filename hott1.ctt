@@ -1,14 +1,7 @@
 module hott1 where
-
-idfun (A : U) (a : A) : A = a
-Path (A : U) (a b : A) : U = PathP (<_> A) a b
-refl (A : U) (a : A) : Path A a a = <_> a
-
-swap (A B C : U) (g : A -> B -> C) : B -> A -> C =
-  \(b : B) (a : A) -> g a b
-
-data Unit = tt
-data Tuple (A B : U) = pair (a : A) (b : B)
+import algebra
+import basic
+import definitions1
 
 recTuple (A B C : U) (g : A -> B -> C) : Tuple A B -> C = split
   pair a b -> g a b
@@ -47,12 +40,6 @@ acc (A B : U) (R : A -> B -> U) (g : (x : A) -> ((y : B) * R x y)) :
     ((f : A -> B) * ((x : A) -> R x (f x))) =
   ((\(x : A) -> (g x).1), (\(x : A) -> (g x).2))
 
-Magma : U = (A : U) * (A -> A -> A)
-PointedMagma : U = (A : U) * (Tuple (A -> A -> A) A)
-
-data Coproduct (A B : U) = inl (a : A) | inr (b : B)
-data Empty =
-
 recCoproduct (A B C : U) (g0 : A -> C) (g1 : B -> C) :
              Coproduct A B -> C = split
   inl a -> g0 a
@@ -66,8 +53,6 @@ indCoproduct (A B C : U) (C : Coproduct A B -> U)
 
 recEmpty (C : U) : Empty -> C = split {}
 
-data Bool = false | true
-
 recBool (C : U) (c0 : C) (c1 : C) : Bool -> C = split
   false -> c0
   true -> c1
@@ -79,8 +64,6 @@ indBool (C : Bool -> U) (c0 : C false) (c1 : C true) : (x : Bool) -> C x = split
 boolIsTrueOrFalse : (x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true) =
   indBool (\(x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true))
           (inl (refl Bool false)) (inr (refl Bool true))
-
-data Nat = zero | succ (n : Nat)
 
 recNat (C : U) (c0 : C) (cs : Nat -> C -> C) : Nat -> C = split
   zero -> c0
@@ -221,53 +204,6 @@ inrB (A B : U) (b : B) : CoproductB A B = (true, b)
 --    (pr1Exists Bool (\(_ : Bool) -> U) x)
 
 -- exercise 1.8
-
-isAssoc (A : U) (m : A -> A -> A) : U =
-  (x y z : A) -> Path A (m x (m y z)) (m (m x y) z)
-
-isComm (A : U) (m : A -> A -> A) : U =
-  (x y : A) -> Path A (m x y) (m y x)
-
-isDistribLeft (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
-  (a b c : A) -> Path A (mult a (add b c)) (add (mult a b) (mult a c))
-
-isDistribRight (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
-  (a b c : A) -> Path A (mult (add a b) c) (add (mult a c) (mult b c))
-
-hasIdentity (A : U) (m : A -> A -> A) (e : A) : U =
-  (x : A) -> Tuple (Path A (m e x) x) (Path A (m x e) x)
-
-isMonoid (A : U) : U =
-  (m : A -> A -> A) *
-  (e : A) *
-  (_ : isAssoc A m) *
-  hasIdentity A m e
-
-Monoid : U =
-  (A : U) * isMonoid A
-
-isCommutativeMonoid (A : U) : U =
-  (monoid : isMonoid A) *
-  isComm A monoid.1
-
-CommutativeMonoid : U =
-  (A : U) * isCommutativeMonoid A
-
-isSemigroup (A : U) : U =
-  (m : A -> A -> A) * isAssoc A m
-
-Semigroup : U =
-  (A : U) * isSemigroup A
-
-isSemiring (A : U) : U =
-  (add : isCommutativeMonoid A) *
-  (mul : isSemigroup A) *
-  (_ : isDistribLeft A add.1.1 mul.1) *
-  (_ : isDistribRight A add.1.1 mul.1) *
-  hasIdentity A mul.1 add.1.2.1
-
-Semiring : U =
-  (A : U) * isSemiring A
 
 multRec : Nat -> Nat -> Nat =
   recNat (Nat -> Nat) (\(_ : Nat) -> zero)

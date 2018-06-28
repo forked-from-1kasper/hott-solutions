@@ -1,0 +1,53 @@
+module algebra where
+import basic
+import definitions1
+
+Magma : U = (A : U) * (A -> A -> A)
+PointedMagma : U = (A : U) * (Tuple (A -> A -> A) A)
+
+isAssoc (A : U) (m : A -> A -> A) : U =
+  (x y z : A) -> Path A (m x (m y z)) (m (m x y) z)
+
+isComm (A : U) (m : A -> A -> A) : U =
+  (x y : A) -> Path A (m x y) (m y x)
+
+isDistribLeft (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
+  (a b c : A) -> Path A (mult a (add b c)) (add (mult a b) (mult a c))
+
+isDistribRight (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
+  (a b c : A) -> Path A (mult (add a b) c) (add (mult a c) (mult b c))
+
+hasIdentity (A : U) (m : A -> A -> A) (e : A) : U =
+  (x : A) -> Tuple (Path A (m e x) x) (Path A (m x e) x)
+
+isMonoid (A : U) : U =
+  (m : A -> A -> A) *
+  (e : A) *
+  (_ : isAssoc A m) *
+  hasIdentity A m e
+
+Monoid : U =
+  (A : U) * isMonoid A
+
+isCommutativeMonoid (A : U) : U =
+  (monoid : isMonoid A) *
+  isComm A monoid.1
+
+CommutativeMonoid : U =
+  (A : U) * isCommutativeMonoid A
+
+isSemigroup (A : U) : U =
+  (m : A -> A -> A) * isAssoc A m
+
+Semigroup : U =
+  (A : U) * isSemigroup A
+
+isSemiring (A : U) : U =
+  (add : isCommutativeMonoid A) *
+  (mul : isSemigroup A) *
+  (_ : isDistribLeft A add.1.1 mul.1) *
+  (_ : isDistribRight A add.1.1 mul.1) *
+  hasIdentity A mul.1 add.1.2.1
+
+Semiring : U =
+  (A : U) * isSemiring A

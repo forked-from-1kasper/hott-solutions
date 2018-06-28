@@ -1,0 +1,9 @@
+module definitions1 where
+import basic
+
+data Unit = tt
+data Tuple (A B : U) = pair (a : A) (b : B)
+data Coproduct (A B : U) = inl (a : A) | inr (b : B)
+data Empty =
+data Bool = false | true
+data Nat = zero | succ (n : Nat)

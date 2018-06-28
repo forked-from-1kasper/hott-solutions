@@ -1,0 +1,8 @@
+module basic where
+
+idfun (A : U) (a : A) : A = a
+Path (A : U) (a b : A) : U = PathP (<_> A) a b
+refl (A : U) (a : A) : Path A a a = <_> a
+
+swap (A B C : U) (g : A -> B -> C) : B -> A -> C =
+  \(b : B) (a : A) -> g a b
