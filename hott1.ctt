@@ -259,15 +259,38 @@ multRightZero : (a : Nat) -> Path Nat zero (mult a zero) = split
                      [ (i = 0) -> <j> (multRightZero a) @ -j,
 		       (i = 1) -> refl Nat (add zero (mult a zero)) ]
 
---addRightApplication (a b c : Nat) (p : Path Nat b c) :
---  Path Nat (add a b) (add a c) = <i> add a (p @ i)
+moveSuccInAdd (a : Nat) : (b : Nat) ->
+  Path Nat (add (succ a) b) (succ (add a b)) = split
+  zero -> refl Nat (succ a)
+  succ b -> <i> succ (moveSuccInAdd a b @ i)
 
---multDistribRightSwapped (b c : Nat) : (a : Nat) ->
---  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
---  zero -> <i> comp (refl U Nat) (mult (addZero b @ i) c)
---                   [ (i = 0) -> refl Nat (mult (add zero b) c),
---                     (i = 1) -> <j> addZero (mult b c) @ -j ]
---  succ a -> ?
+expandSuccMult (a : Nat) (b : Nat) :
+  Path Nat (mult (succ a) b) (add b (mult a b)) =
+  refl Nat (add b (mult a b))
+
+multDistribRightSwapped (b c : Nat) : (a : Nat) ->
+  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
+  zero -> <i> comp (refl U Nat) (mult (addZero b @ i) c)
+                   [ (i = 0) -> refl Nat (mult (add zero b) c),
+                     (i = 1) -> <j> addZero (mult b c) @ -j ]
+  succ a ->
+    <i> comp (refl U Nat) (add c (multDistribRightSwapped b c a @ i))
+        [ (i = 0) -> expandSuccInMult,
+	  (i = 1) -> addA c (mult a c) (mult b c) ]
+    where
+      hole0 :
+        Path Nat (add c (mult (add a b) c)) (mult (succ (add a b)) c) =
+        refl Nat (add c (mult (add a b) c))
+
+      expandSuccInMult :
+        Path Nat (add c (mult (add a b) c)) (mult (add (succ a) b) c) =
+        <i> comp (refl U Nat) (hole0 @ i)
+                 [ (i = 0) -> refl Nat (add c (mult (add a b) c)),
+                   (i = 1) -> <j> mult (moveSuccInAdd a b @ -j) c ]
+
+multDistribRight (a b c : Nat) :
+  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) =
+  multDistribRightSwapped b c a
 
 --multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
 --  zero -> refl Nat zero
@@ -275,7 +298,7 @@ multRightZero : (a : Nat) -> Path Nat zero (mult a zero) = split
 
 -- exercise 1.9
 
-Fin : Nat -> U = ?
+Fin : Nat -> U = undefined
 -- wtf?
 
 -- exercise 1.11
