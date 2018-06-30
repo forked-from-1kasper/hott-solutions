@@ -7,3 +7,127 @@ data Coproduct (A B : U) = inl (a : A) | inr (b : B)
 data Empty =
 data Bool = false | true
 data Nat = zero | succ (n : Nat)
+
+recTuple (A B C : U) (g : A -> B -> C) : Tuple A B -> C = split
+  pair a b -> g a b
+
+pr1Tuple (A B : U) : Tuple A B -> A = recTuple A B A (\(a : A) (b : B) -> a)
+pr2Tuple (A B : U) : Tuple A B -> B = recTuple A B B (\(a : A) (b : B) -> b)
+
+uniqTuple (A B : U) : (x : Tuple A B) ->
+         Path (Tuple A B) (pair (pr1Tuple A B x) (pr2Tuple A B x)) x = split
+  pair a b -> refl (Tuple A B) (pair a b)
+
+indTuple (A B C : U) (C : Tuple A B -> U)
+         (g : (x : A) -> (y : B) -> C (pair x y)) :
+	 (x : Tuple A B) -> C x = split
+  pair a b -> g a b
+
+recUnit (C : U) (c : C) (_ : Unit) : C = c
+indUnit (C : Unit -> U) (c : C tt) : (x : Unit) -> C x = split
+  tt -> c
+uniqInd : (x : Unit) -> Path Unit x tt =
+  indUnit (\(x : Unit) -> Path Unit x tt) (refl Unit tt)
+
+pr1Exists (A : U) (B : A -> U) (p : (x : A) * B x) : A = p.1
+
+pr2Exists (A : U) (B : A -> U) (p : (x : A) * B x) : B (pr1Exists A B p) = p.2
+
+recExists (A C : U) (B : A -> U)
+          (g : (x : A) -> B x -> C) (p : (x : A) * B x) : C =
+  g p.1 p.2
+
+indExists (A : U) (B : A -> U) (C : ((x : A) * B x) -> U)
+  (g : (a : A) -> (b : B a) -> C (a, b))
+  (p : (x : A) * B x) : C p = g p.1 p.2
+
+acc (A B : U) (R : A -> B -> U) (g : (x : A) -> ((y : B) * R x y)) :
+    ((f : A -> B) * ((x : A) -> R x (f x))) =
+  ((\(x : A) -> (g x).1), (\(x : A) -> (g x).2))
+
+recCoproduct (A B C : U) (g0 : A -> C) (g1 : B -> C) :
+             Coproduct A B -> C = split
+  inl a -> g0 a
+  inr b -> g1 b
+
+indCoproduct (A B C : U) (C : Coproduct A B -> U)
+             (g0 : (a : A) -> C (inl a)) (g1 : (b : B) -> C (inr b)) :
+             (x : Coproduct A B) -> C x = split
+  inl a -> g0 a
+  inr b -> g1 b
+
+recEmpty (C : U) : Empty -> C = split {}
+
+recBool (C : U) (c0 : C) (c1 : C) : Bool -> C = split
+  false -> c0
+  true -> c1
+
+indBool (C : Bool -> U) (c0 : C false) (c1 : C true) : (x : Bool) -> C x = split
+  false -> c0
+  true -> c1
+
+boolIsTrueOrFalse : (x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true) =
+  indBool (\(x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true))
+          (inl (refl Bool false)) (inr (refl Bool true))
+
+recNat (C : U) (c0 : C) (cs : Nat -> C -> C) : Nat -> C = split
+  zero -> c0
+  succ n -> cs n (recNat C c0 cs n)
+
+indNat (C : Nat -> U) (c0 : C zero) (cs : (n : Nat) -> C n -> C (succ n)) :
+       (n : Nat) -> C n = split
+  zero -> c0
+  succ n -> cs n (indNat C c0 cs n)
+
+double : Nat -> Nat = recNat Nat zero (\(n : Nat) (y : Nat) -> succ (succ y))
+addRec : Nat -> Nat -> Nat =
+  recNat (Nat -> Nat) (idfun Nat)
+         (\(n : Nat) (g : Nat -> Nat) (m : Nat) -> succ (g m))
+
+assocZero (j k : Nat) : Path Nat (addRec zero (addRec j k)) (addRec (addRec zero j) k) =
+  refl Nat (addRec j k)
+
+apSuc (m n : Nat) (p : Path Nat m n) : Path Nat (succ m) (succ n) =
+  <i> succ (p @ i)
+
+assocS (i j k : Nat) (h : Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k)) :
+  Path Nat (addRec (succ i) (addRec j k)) (addRec (addRec (succ i) j) k) =
+  apSuc (addRec i (addRec j k)) (addRec (addRec i j) k) h
+
+assoc (j k : Nat) : (i : Nat) -> Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k) =
+  indNat (\(i : Nat) -> Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k))
+         (assocZero j k) (\(i : Nat) -> assocS i j k)
+
+not (A : U) : U = A -> Empty
+
+ifNotAandNotBThenNotAorB (A B : U)
+  (g : Tuple (not A) (not B)) : Coproduct A B -> Empty = split
+  inl a -> (pr1Tuple (not A) (not B) g) a
+  inr b -> (pr2Tuple (not A) (not B) g) b
+
+ifNotAorBThenNotAandNotB (A B : U) (x : Coproduct A B)
+  (e : Empty) : Tuple (A -> Empty) (B -> Empty) =
+  recCoproduct A B (Tuple (A -> Empty) (B -> Empty))
+               (\(a : A) -> pair (const Empty A e) (const Empty B e))
+               (\(b : B) -> pair (const Empty A e) (const Empty B e)) x
+ 
+
+splitTuple (A : U) (P Q : A -> U) (g : (x : A) -> Tuple (P x) (Q x)) :
+  Tuple ((x : A) -> P x) ((x : A) -> Q x) =
+  pair (\(x : A) -> pr1Tuple (P x) (Q x) (g x))
+       (\(x : A) -> pr2Tuple (P x) (Q x) (g x))
+
+LessOrEqual (n m : Nat) : U = (k : Nat) * (Path Nat (addRec n k) m)
+Less (n m : Nat) : U = (k : Nat) * (Path Nat (addRec n (succ k)) m)
+
+indBasePath (A : U) (a : A) (C : (x : A) -> Path A a x -> U)
+            (d : C a (<_> a)) (x : A) (p : Path A a x) : C x p =
+  transport (<i> C (comp (refl U A) a [(i = 0) -> refl A a, (i = 1) -> p])
+                   (fill (refl U A) a [(i = 0) -> refl A a, (i = 1) -> p])) d
+
+indPath (A : U) (C : (x y : A) -> Path A x y -> U)
+        (c : (x : A) -> C x x (refl A x)) :
+	(x y : A) -> (p : Path A x y) -> C x y p =
+  \(x y : A) (p : Path A x y) -> indBasePath A x (C x) (c x) y p
+
+Neq (A : U) (x y : A) : U = not (Path A x y)
