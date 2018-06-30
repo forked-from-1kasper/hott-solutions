@@ -51,12 +51,8 @@ iter (C : U) (c0 : C) (cs : C -> C) : Nat -> C = split
 recNatFromIter (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) : C =
   iter C c0 (cs n) n
 
---indPath (A : U) (C : (x y : A) -> Path A x y -> U)
---        (c : (x : A) -> C x x (refl A x)) :
---	(x y : A) -> (p : Path A x y) -> C x y p
-
---recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
---  Path C (recNat C c0 cs n) (recNatFromIter C c0 cs n) = ?
+recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
+  Path C (recNat C c0 cs n) (recNatFromIter C c0 cs n) = undefined
 
 -- exercise 1.5
 
@@ -66,16 +62,10 @@ inlB (A B : U) (a : A) : CoproductB A B = (false, a)
 
 inrB (A B : U) (b : B) : CoproductB A B = (true, b)
 
---recBool (C : U) (c0 : C) (c1 : C) : Bool -> C
-
---indCoproductB (A B C : U) (C : CoproductB A B -> U)
---              (g0 : (a : A) -> C (inlB A B a))
---              (g1 : (b : B) -> C (inrB A B b)) :
---              (x : CoproductB A B) -> C x =
---  \(x : CoproductB A B) -> recBool U
---    (g0 (pr2Exists Bool (\(_ : Bool) -> U) x))
---    (g1 (pr2Exists Bool (\(_ : Bool) -> U) x))
---    (pr1Exists Bool (\(_ : Bool) -> U) x)
+indCoproductB (A B C : U) (C : CoproductB A B -> U)
+              (g0 : (a : A) -> C (inlB A B a))
+              (g1 : (b : B) -> C (inrB A B b)) :
+              (x : CoproductB A B) -> C x = undefined
 
 -- exercise 1.8
 
