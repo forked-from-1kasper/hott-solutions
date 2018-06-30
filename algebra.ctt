@@ -47,7 +47,8 @@ isSemiring (A : U) : U =
   (mul : isSemigroup A) *
   (_ : isDistribLeft A add.1.1 mul.1) *
   (_ : isDistribRight A add.1.1 mul.1) *
-  hasIdentity A mul.1 add.1.2.1
+  (_ : (x : A) -> Path A (mul.1 add.1.2.1 x) add.1.2.1) *
+  ((x : A) -> Path A (mul.1 x add.1.2.1) add.1.2.1)
 
 Semiring : U =
   (A : U) * isSemiring A

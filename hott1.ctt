@@ -216,8 +216,8 @@ pownRec (n : Nat) (m : Nat) : Nat = pownRecFlipped m n
 -- Yes, we have already defined add—addRec—thought
 -- recursor of natural numbers,
 -- but proofs with it is so ugly and complicated,
--- that I think, that better is defined
--- add thought pattern‐matching
+-- that I think, that add defined thought
+-- pattern‐matching is 100 times better.
 add (m : Nat) : Nat -> Nat = split
   zero -> m
   succ n -> succ (add m n)
@@ -264,9 +264,10 @@ moveSuccInAdd (a : Nat) : (b : Nat) ->
   zero -> refl Nat (succ a)
   succ b -> <i> succ (moveSuccInAdd a b @ i)
 
-expandSuccMult (a : Nat) (b : Nat) :
-  Path Nat (mult (succ a) b) (add b (mult a b)) =
-  refl Nat (add b (mult a b))
+multAOnSb (a : Nat) : (b : Nat) ->
+  Path Nat (mult a (succ b)) (add (mult a b) a) = split
+  zero -> ?
+  succ b -> ?
 
 multDistribRightSwapped (b c : Nat) : (a : Nat) ->
   Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
@@ -291,6 +292,10 @@ multDistribRightSwapped (b c : Nat) : (a : Nat) ->
 multDistribRight (a b c : Nat) :
   Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) =
   multDistribRightSwapped b c a
+
+multComm (a : Nat) : (b : Nat) -> Path Nat (mult a b) (mult b a) = split
+  zero -> <i> multRightZero a @ -i
+  succ b -> ?
 
 --multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
 --  zero -> refl Nat zero
