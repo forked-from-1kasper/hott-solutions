@@ -173,6 +173,15 @@ multComm (a : Nat) : (b : Nat) -> Path Nat (mult a b) (mult b a) = split
                  [ (i = 0) -> <j> add (multComm b a @ j) a,
                    (i = 1) -> refl Nat (add a (mult b a))]
 
+--isDistribLeft (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
+--  (a b c : A) -> Path A (mult a (add b c)) (add (mult a b) (mult a c))
+
+multDistribLeft (a b c : Nat) :
+  Path Nat (mult a (add b c)) (add (mult a b) (mult a c)) =
+  <i> comp (refl U Nat) (multDistribRight b c a @ i)
+      [ (i = 0) -> multComm (add b c) a,
+        (i = 1) -> <j> add (multComm b a @ j) (multComm c a @ j) ]
+
 --multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
 --  zero -> refl Nat zero
 --  succ c -> multAssoc a b c
