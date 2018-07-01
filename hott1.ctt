@@ -79,10 +79,10 @@ pownRecFlipped : Nat -> Nat -> Nat =
 
 pownRec (n : Nat) (m : Nat) : Nat = pownRecFlipped m n
 
--- Yes, we have already defined add—addRec—thought
+-- Yes, we have already defined add—addRec—through
 -- recursor of natural numbers,
 -- but proofs with it is so ugly and complicated,
--- that I think, that add defined thought
+-- that I think, that add defined through
 -- pattern‐matching is 100 times better.
 add (m : Nat) : Nat -> Nat = split
   zero -> m
