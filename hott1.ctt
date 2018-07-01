@@ -130,19 +130,13 @@ moveSuccInAdd (a : Nat) : (b : Nat) ->
   zero -> refl Nat (succ a)
   succ b -> <i> succ (moveSuccInAdd a b @ i)
 
-unitNeutralOnMult : (a : Nat) -> Path Nat a (mult a (succ zero)) = split
-  zero -> refl Nat zero
-  succ a ->
-    <i> comp (refl U Nat) (addComm a (succ zero) @ i)
-             [ (i = 0) -> refl Nat (succ a),
-               (i = 1) -> <j> add (succ zero) (unitNeutralOnMult a @ j) ]
-
-multAOnSb (a : Nat) : (b : Nat) ->
+multAOnSb : (a : Nat) -> (b : Nat) ->
   Path Nat (mult a (succ b)) (add (mult a b) a) = split
-  zero -> <i> comp (refl U Nat) (addZero a @ -i)
-                   [ (i = 0) -> unitNeutralOnMult a,
-                     (i = 1) -> <j> add (multRightZero a @ j) a ]
-  succ b -> ?
+  zero -> \(b : Nat) -> refl Nat zero
+  succ a -> \(b : Nat) ->
+    <i> comp (refl U Nat) (moveSuccInAdd b (add (mult a b) a) @ i)
+             [ (i = 0) -> <j> add (succ b) (multAOnSb a b @ -j),
+               (i = 1) -> <j> succ (addA b (mult a b) a @ j) ]
 
 multDistribRightSwapped (b c : Nat) : (a : Nat) ->
   Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
