@@ -116,9 +116,6 @@ addA (a b : Nat) : (c : Nat) -> Path Nat (add a (add b c)) (add (add a b) c) = s
   zero -> <_> add a b
   succ c -> <i> succ (addA a b c @ i)
 
-commutativeMonoidOverNatAdd : isCommutativeMonoid Nat =
-  ((add, zero, addA, zeroIdentityNat), addComm)
-
 multRightZero : (a : Nat) -> Path Nat zero (mult a zero) = split
   zero -> refl Nat zero
   succ a -> <i> comp (refl U Nat) ((addZero (mult a zero)) @ -i)
@@ -211,7 +208,22 @@ multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a 
                  (mult a (multDistribLeft b c (succ zero) @ -i))
             [ (i = 0) -> hole1,
               (i = 1) -> refl Nat (mult a (mult b (succ c)))]
-        
+
+commutativeMonoidOverNatAdd : isCommutativeMonoid Nat =
+  ((add, zero, addA, zeroIdentityNat), addComm)
+
+semigroupOverNatMul : isSemigroup Nat =
+  (mult, multAssoc)
+
+semiringOverNat : isSemiring Nat =
+  (commutativeMonoidOverNatAdd,
+   semigroupOverNatMul,
+   multDistribLeft,
+   multDistribRight,
+   \(x : Nat) -> refl Nat zero,
+   \(x : Nat) -> multComm x zero)
+
+natSemiring : Semiring = (Nat, semiringOverNat)
 
 -- exercise 1.9
 
