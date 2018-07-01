@@ -173,18 +173,45 @@ multComm (a : Nat) : (b : Nat) -> Path Nat (mult a b) (mult b a) = split
                  [ (i = 0) -> <j> add (multComm b a @ j) a,
                    (i = 1) -> refl Nat (add a (mult b a))]
 
---isDistribLeft (A : U) (add : A -> A -> A) (mult : A -> A -> A) : U =
---  (a b c : A) -> Path A (mult a (add b c)) (add (mult a b) (mult a c))
-
 multDistribLeft (a b c : Nat) :
   Path Nat (mult a (add b c)) (add (mult a b) (mult a c)) =
   <i> comp (refl U Nat) (multDistribRight b c a @ i)
       [ (i = 0) -> multComm (add b c) a,
         (i = 1) -> <j> add (multComm b a @ j) (multComm c a @ j) ]
 
---multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
---  zero -> refl Nat zero
---  succ c -> multAssoc a b c
+multIdentityRight (a : Nat) : Path Nat (mult a (succ zero)) a =
+  multComm a (succ zero)
+
+multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
+  zero -> <i> comp (refl U Nat) (multRightZero a @ -i)
+              [ (i = 0) -> <j> mult a (multRightZero b @ j),
+                (i = 1) -> multRightZero (mult a b) ]
+  succ c ->
+    <i> comp (refl U Nat) (add (multAssoc a b c @ i) (mult a b))
+             [ (i = 0) -> left,
+               (i = 1) -> right ]
+    where
+      right : Path Nat (add (mult (mult a b) c) (mult a b))
+                       (mult (mult a b) (succ c)) =
+        <i> comp (refl U Nat)
+                 (multDistribLeft (mult a b) c (succ zero) @ -i)
+            [ (i = 0) -> <j> add (mult (mult a b) c)
+                                 (multIdentityRight (mult a b) @ j),
+              (i = 1) -> refl Nat (mult (mult a b)
+                                  (add c (succ zero)))]
+      hole1 : Path Nat (mult a (add (mult b c) (mult b (succ zero))))
+                       (add (mult a (mult b c)) (mult a b)) =
+        <i> comp (refl U Nat) (multDistribLeft a (mult b c) b @ i)
+            [ (i = 0) ->
+                <j> mult a (add (mult b c) (multIdentityRight b @ -j)),
+              (i = 1) -> refl Nat (add (mult a (mult b c)) (mult a b)) ]
+      left : Path Nat (add (mult a (mult b c)) (mult a b))
+                      (mult a (mult b (succ c))) =
+        <i> comp (refl U Nat)
+                 (mult a (multDistribLeft b c (succ zero) @ -i))
+            [ (i = 0) -> hole1,
+              (i = 1) -> refl Nat (mult a (mult b (succ c)))]
+        
 
 -- exercise 1.9
 
