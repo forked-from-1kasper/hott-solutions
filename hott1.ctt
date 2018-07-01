@@ -141,7 +141,7 @@ multAOnSb (a : Nat) : (b : Nat) ->
   Path Nat (mult a (succ b)) (add (mult a b) a) = split
   zero -> <i> comp (refl U Nat) (addZero a @ -i)
                    [ (i = 0) -> unitNeutralOnMult a,
-                     (i = 1) -> <j> add (multRightZero a @ j) a]
+                     (i = 1) -> <j> add (multRightZero a @ j) a ]
   succ b -> ?
 
 multDistribRightSwapped (b c : Nat) : (a : Nat) ->
@@ -170,7 +170,14 @@ multDistribRight (a b c : Nat) :
 
 multComm (a : Nat) : (b : Nat) -> Path Nat (mult a b) (mult b a) = split
   zero -> <i> multRightZero a @ -i
-  succ b -> ?
+  succ b -> <i> comp (refl U Nat) (multAOnSb a b @ i)
+                [ (i = 0) -> refl Nat (mult a (succ b)),
+                  (i = 1) -> hole0 ]
+    where
+      hole0 : Path Nat (add (mult a b) a) (add a (mult b a)) =
+        <i> comp (refl U Nat) (addComm (mult b a) a @ i)
+                 [ (i = 0) -> <j> add (multComm b a @ j) a,
+                   (i = 1) -> refl Nat (add a (mult b a))]
 
 --multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
 --  zero -> refl Nat zero
