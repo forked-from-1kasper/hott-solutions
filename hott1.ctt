@@ -259,3 +259,10 @@ theorem3 (A B : U) : Coproduct (not A) (not B) -> not (Tuple A B) = split
 
 notLEM (P : U) : not (not (Coproduct P (not P))) =
   \(h : not (Coproduct P (not P))) -> h (inr (\(x : P) -> h (inl x)))
+
+-- exercise 1.15
+
+uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
+  indPath A (\(a b : A) (_ : Path A a b) -> C y)
+            (\(x0 : A) -> transport (<i> C (p @ i)) h) x y p
+            -- maybe, transport is cheating
