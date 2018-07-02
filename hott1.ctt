@@ -236,7 +236,6 @@ natSemiring : Semiring = (Nat, semiringOverNat)
 -- exercise 1.9
 
 Fin : Nat -> U = undefined
--- wtf?
 
 -- exercise 1.11
 
