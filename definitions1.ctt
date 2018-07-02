@@ -59,6 +59,7 @@ indCoproduct (A B C : U) (C : Coproduct A B -> U)
   inr b -> g1 b
 
 recEmpty (C : U) : Empty -> C = split {}
+indEmpty (C : Empty -> U) : (z : Empty) -> C z = split {}
 
 recBool (C : U) (c0 : C) (c1 : C) : Bool -> C = split
   false -> c0
