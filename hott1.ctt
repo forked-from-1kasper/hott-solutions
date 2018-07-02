@@ -48,11 +48,19 @@ iter (C : U) (c0 : C) (cs : C -> C) : Nat -> C = split
   zero -> c0
   succ n -> cs (iter C c0 cs n)
 
-recNatFromIter (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) : C =
-  iter C c0 (cs n) n
+iterStep (C : U) (cs : Nat -> C -> C) (p : Sigma Nat C) : Sigma Nat C =
+  (succ p.1, cs p.1 p.2)
 
-recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
-  Path C (recNat C c0 cs n) (recNatFromIter C c0 cs n) = undefined
+recNatFromIter' (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
+                Sigma Nat C =
+  iter (Sigma Nat C) (zero, c0) (iterStep C cs) n
+
+recNatFromIter (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) : C =
+  (recNatFromIter' C c0 cs n).2
+
+recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) : (n : Nat) ->
+  Path (Sigma Nat C) (n, recNat C c0 cs n)
+                     (recNatFromIter' C c0 cs n) = undefined
 
 -- exercise 1.5
 
@@ -64,8 +72,8 @@ inrB (A B : U) (b : B) : CoproductB A B = (true, b)
 
 indCoproductB (A B C : U) (C : CoproductB A B -> U)
               (g0 : (a : A) -> C (inlB A B a))
-              (g1 : (b : B) -> C (inrB A B b)) :
-              (x : CoproductB A B) -> C x = undefined
+              (g1 : (b : B) -> C (inrB A B b))
+              (x : CoproductB A B) : C x = undefined
 
 -- exercise 1.8
 

@@ -29,6 +29,8 @@ indUnit (C : Unit -> U) (c : C tt) : (x : Unit) -> C x = split
 uniqInd : (x : Unit) -> Path Unit x tt =
   indUnit (\(x : Unit) -> Path Unit x tt) (refl Unit tt)
 
+Sigma (A B : U) : U = (_ : A) * B
+
 pr1Exists (A : U) (B : A -> U) (p : (x : A) * B x) : A = p.1
 
 pr2Exists (A : U) (B : A -> U) (p : (x : A) * B x) : B (pr1Exists A B p) = p.2
