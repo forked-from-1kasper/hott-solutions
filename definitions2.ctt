@@ -27,3 +27,22 @@ compPathInd (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
     e (x : A) : E x x (refl A x) = refl A x
     d (x z : A) (q : Path A x z) : E x z q =
       indPath A E e x z q
+
+-- this is better
+compPath (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
+  Path A x z =
+  <i> comp (refl U A) (p @ i)
+      [ (i = 0) -> refl A x,
+        (i = 1) -> q ]
+
+lemma1 (A : U) (x y : A) (p : Path A x y) :
+  Path (Path A x y) p (compPath A x y y p (refl A y)) =
+  indPath A D d x y p
+  where
+    D (x y : A) (p : Path A x y) : U =
+      Path (Path A x y) p (compPath A x y y p (refl A y))
+    reflComposition (x : A) :
+      Path (Path A x x) (refl A x)
+           (compPath A x x x (refl A x) (refl A x)) =
+      undefined -- ???
+    d (x : A) : D x x (refl A x) = reflComposition x
