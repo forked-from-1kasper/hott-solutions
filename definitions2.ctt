@@ -1,0 +1,29 @@
+module definitions2 where
+
+import hott1
+
+--indPath (A : U) (C : (x y : A) -> Path A x y -> U)
+--        (c : (x : A) -> C x x (refl A x)) :
+--	(x y : A) -> (p : Path A x y) -> C x y p
+
+pathSymInd (A : U) (x y : A) (p : Path A x y) : Path A y x =
+  indPath A D d x y p
+  where
+    D (x y : A) (p : Path A x y) : U = Path A y x
+    d (x : A) : D x x (refl A x) = refl A x
+
+-- or this
+pathSym (A : U) (x y : A) (p : Path A x y) : Path A y x =
+  <i> p @ -i
+
+compPathInd (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
+  Path A x z =
+  (indPath A D d x y p) z q
+  where
+    D (x y : A) (p : Path A x y) : U =
+      (z : A) -> (q : Path A y z) -> Path A x z
+    E (x z : A) (q : Path A x z) : U =
+      Path A x z
+    e (x : A) : E x x (refl A x) = refl A x
+    d (x z : A) (q : Path A x z) : E x z q =
+      indPath A E e x z q
