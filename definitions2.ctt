@@ -35,17 +35,21 @@ compPath (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
       [ (i = 0) -> refl A x,
         (i = 1) -> q ]
 
+reflComposition (A : U) (x : A) :
+  Path (Path A x x) (compPath A x x x (refl A x) (refl A x))
+       (refl A x) =
+  <k j> comp (refl U A) (refl A x @ k /\ j)
+          [ (j = 0) -> refl A x,
+            (j = 1) -> refl A x,
+            (k = 1) -> <i> refl A x @ k /\ i ]
+
 lemma1 (A : U) (x y : A) (p : Path A x y) :
   Path (Path A x y) p (compPath A x y y p (refl A y)) =
   indPath A D d x y p
   where
     D (x y : A) (p : Path A x y) : U =
       Path (Path A x y) p (compPath A x y y p (refl A y))
-    reflComposition (x : A) :
-      Path (Path A x x) (refl A x)
-           (compPath A x x x (refl A x) (refl A x)) =
-      undefined -- ???
-    d (x : A) : D x x (refl A x) = reflComposition x
+    d (x : A) : D x x (refl A x) = <i> reflComposition A x @ -i
 
 lemma2 (A : U) (x y : A) (p : Path A x y) :
   Path (Path A y y) (compPath A y x y (pathSym A x y p) p) (refl A y) =
@@ -53,8 +57,4 @@ lemma2 (A : U) (x y : A) (p : Path A x y) :
   where
     D (x y : A) (p : Path A x y) : U =
       Path (Path A y y) (compPath A y x y (pathSym A x y p) p) (refl A y)
-    reflComposition (x : A) :
-      Path (Path A x x)
-        (compPath A x x x (pathSym A x x (refl A x)) (refl A x))
-                          (refl A x) = undefined -- ???
-    d (x : A) : D x x (refl A x) = reflComposition x
+    d (x : A) : D x x (refl A x) = reflComposition A x
