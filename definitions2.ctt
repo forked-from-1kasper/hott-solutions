@@ -46,3 +46,15 @@ lemma1 (A : U) (x y : A) (p : Path A x y) :
            (compPath A x x x (refl A x) (refl A x)) =
       undefined -- ???
     d (x : A) : D x x (refl A x) = reflComposition x
+
+lemma2 (A : U) (x y : A) (p : Path A x y) :
+  Path (Path A y y) (compPath A y x y (pathSym A x y p) p) (refl A y) =
+  indPath A D d x y p
+  where
+    D (x y : A) (p : Path A x y) : U =
+      Path (Path A y y) (compPath A y x y (pathSym A x y p) p) (refl A y)
+    reflComposition (x : A) :
+      Path (Path A x x)
+        (compPath A x x x (pathSym A x x (refl A x)) (refl A x))
+                          (refl A x) = undefined -- ???
+    d (x : A) : D x x (refl A x) = reflComposition x
