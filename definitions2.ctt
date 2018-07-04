@@ -68,8 +68,21 @@ lemma3 (A : U) (x y : A) (p : Path A x y) :
     d (x : A) : D x x (refl A x) = refl (Path A x x) (refl A x)
 
 -- FFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-lemma4 (A : U) (x y z w : A) (p : Path A x y)
-       (q : Path A y z) (r : Path A z w) :
+lemma4Ind
+    (A : U) (x y z w : A) (p : Path A x y)
+    (q : Path A y z) (r : Path A z w) :
   Path (Path A x w) (compPath A x y w p (compPath A y z w q r))
                     (compPath A x z w (compPath A x y z p q) r) =
   undefined
+
+apInd (A B : U) (f : A -> B) (x y : A)
+      (p : Path A x y) : Path B (f x) (f y) =
+   indPath A D d x y p
+   where
+     D (x y : A) (p : Path A x y) : U = Path B (f x) (f y)
+     d (x : A) : D x x (refl A x) = refl B (f x)
+
+-- DOUBLE FFFFUUUU
+ap (A B : U) (f : A -> B) (x y : A)
+   (p : Path A x y) : Path B (f x) (f y) =
+   <i> f (p @ i)
