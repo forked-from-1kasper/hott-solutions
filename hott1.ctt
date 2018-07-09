@@ -88,10 +88,22 @@ pairB (A B : U) (a : A) (b : B) : TupleB A B = split
 pr1TupleB (A B : U) (x : TupleB A B) : A = x false
 pr2TupleB (A B : U) (x : TupleB A B) : B = x true
 
+funExt (A : U) (B : A -> U) (f g : (x : A) -> B x)
+  (p : (x : A) -> Path (B x) (f x) (g x)) :
+  Path ((x : A) -> B x) f g =
+  <i> \(x : A) -> (p x) @ i
+
 uniqTupleB (A B : U) (x : TupleB A B) :
          Path (TupleB A B) (pairB A B (pr1TupleB A B x)
                                       (pr2TupleB A B x)) x =
-  undefined
+  funExt Bool (recBool U A B)
+         (pairB A B (pr1TupleB A B x) (pr2TupleB A B x)) x hole
+  where
+    hole : (b : Bool) ->
+     Path (recBool U A B b)
+       ((pairB A B (pr1TupleB A B x) (pr2TupleB A B x)) b) (x b) = split
+     false -> refl A (x false)
+     true -> refl B (x true)
 
 indTupleB (A B C : U) (C : TupleB A B -> U)
           (g : (x : A) -> (y : B) -> C (pairB A B x y))
@@ -286,9 +298,8 @@ notLEM (P : U) : not (not (Coproduct P (not P))) =
 -- exercise 1.15
 
 uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
-  indPath A (\(a b : A) (_ : Path A a b) -> C y)
-            (\(x0 : A) -> transport (<i> C (p @ i)) h) x y p
-            -- maybe, transport is cheating
+  indPath A (\(x y : A) (p : Path A x y) -> (C x -> C y))
+          (\(x : A) -> idfun (C x)) x y p h
 
 -- exercise 1.16
 -- 1.8
