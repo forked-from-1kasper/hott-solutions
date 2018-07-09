@@ -295,6 +295,11 @@ theorem3 (A B : U) : Coproduct (not A) (not B) -> not (Tuple A B) = split
 notLEM (P : U) : not (not (Coproduct P (not P))) =
   \(h : not (Coproduct P (not P))) -> h (inr (\(x : P) -> h (inl x)))
 
+-- exercise 1.14
+
+--f (A : U) (x : A) (p : Path A x x) : Path (Path A x x) p (refl A x) =
+--  indPath A (\(x y : A) (p : Path A x y) -> ???)
+
 -- exercise 1.15
 
 uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
