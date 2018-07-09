@@ -273,6 +273,13 @@ natSemiring : Semiring = (Nat, semiringOverNat)
 
 Fin : Nat -> U = undefined
 
+-- exercise 1.10
+
+ack : Nat -> Nat -> Nat =
+  recNat (Nat -> Nat) (\(n : Nat) -> succ n) -- wtf?
+    (\(_ : Nat) (g : Nat -> Nat) ->
+      recNat Nat (g (succ zero)) (\(_ : Nat) -> g))
+
 -- exercise 1.11
 
 tripleNegation (A : U) (h : not (not (not A))) : not A =
