@@ -289,3 +289,7 @@ uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
   indPath A (\(a b : A) (_ : Path A a b) -> C y)
             (\(x0 : A) -> transport (<i> C (p @ i)) h) x y p
             -- maybe, transport is cheating
+
+-- exercise 1.16
+-- 1.8
+-- addComm (a : Nat) : (b : Nat) -> Path Nat (add a b) (add b a)

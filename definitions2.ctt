@@ -75,6 +75,9 @@ lemma4Ind
                     (compPath A x z w (compPath A x y z p q) r) =
   undefined
 
+loopSpace (A : U) (a : A) : U = refl A a
+loopSpace2 (A : U) (a : A) : U = refl (refl A a) (refl A a)
+
 apInd (A B : U) (f : A -> B) (x y : A)
       (p : Path A x y) : Path B (f x) (f y) =
    indPath A D d x y p
