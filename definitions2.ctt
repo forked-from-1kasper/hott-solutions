@@ -43,12 +43,20 @@ reflComposition (A : U) (x : A) :
             (j = 1) -> refl A x,
             (k = 1) -> <i> refl A x @ k /\ i ]
 
-lemma1 (A : U) (x y : A) (p : Path A x y) :
+ru (A : U) (x y : A) (p : Path A x y) :
   Path (Path A x y) p (compPath A x y y p (refl A y)) =
   indPath A D d x y p
   where
     D (x y : A) (p : Path A x y) : U =
       Path (Path A x y) p (compPath A x y y p (refl A y))
+    d (x : A) : D x x (refl A x) = <i> reflComposition A x @ -i
+
+lu (A : U) (x y : A) (p : Path A x y) :
+  Path (Path A x y) p (compPath A x x y (refl A x) p) =
+  indPath A D d x y p
+  where
+    D (x y : A) (p : Path A x y) : U =
+      Path (Path A x y) p (compPath A x x y (refl A x) p)
     d (x : A) : D x x (refl A x) = <i> reflComposition A x @ -i
 
 lemma2 (A : U) (x y : A) (p : Path A x y) :
@@ -75,8 +83,8 @@ lemma4Ind
                     (compPath A x z w (compPath A x y z p q) r) =
   undefined
 
-loopSpace (A : U) (a : A) : U = refl A a
-loopSpace2 (A : U) (a : A) : U = refl (refl A a) (refl A a)
+loopSpace (A : U) (a : A) : U = Path A a a
+loopSpace2 (A : U) (a : A) : U = Path (Path A a a) (refl A a) (refl A a)
 
 apInd (A B : U) (f : A -> B) (x y : A)
       (p : Path A x y) : Path B (f x) (f y) =
