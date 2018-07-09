@@ -77,6 +77,28 @@ indCoproductB (A B C : U) (C : CoproductB A B -> U)
   indBool (\(x : Bool) -> (n : recBool U A B x) -> C (x, n))
           g0 g1 x.1 x.2
 
+-- exercise 1.6
+
+TupleB (A B : U) : U = (x : Bool) -> (recBool U A B x)
+
+pairB (A B : U) (a : A) (b : B) : TupleB A B = split
+  false -> a
+  true -> b
+
+pr1TupleB (A B : U) (x : TupleB A B) : A = x false
+pr2TupleB (A B : U) (x : TupleB A B) : B = x true
+
+uniqTuple (A B : U) (x : TupleB A B) :
+         Path (TupleB A B) (pairB A B (pr1TupleB A B x)
+                                      (pr2TupleB A B x)) x =
+  undefined
+
+indTupleB (A B C : U) (C : TupleB A B -> U)
+          (g : (x : A) -> (y : B) -> C (pairB A B x y))
+          (x : TupleB A B) : C x =
+  transport (<i> C (uniqTuple A B x @ i))
+            (g (pr1TupleB A B x) (pr2TupleB A B x))
+
 -- exercise 1.8
 
 multRec : Nat -> Nat -> Nat =
