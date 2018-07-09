@@ -73,7 +73,9 @@ inrB (A B : U) (b : B) : CoproductB A B = (true, b)
 indCoproductB (A B C : U) (C : CoproductB A B -> U)
               (g0 : (a : A) -> C (inlB A B a))
               (g1 : (b : B) -> C (inrB A B b))
-              (x : CoproductB A B) : C x = undefined
+              (x : CoproductB A B) : C x =
+  indBool (\(x : Bool) -> (n : recBool U A B x) -> C (x, n))
+          g0 g1 x.1 x.2
 
 -- exercise 1.8
 
