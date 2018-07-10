@@ -88,13 +88,13 @@ loopSpace2 (A : U) (a : A) : U = Path (Path A a a) (refl A a) (refl A a)
 
 rWhiskering (A : U) (a b c : A) (p q : Path A a b)
   (alpha : Path (Path A a b) p q) (r : Path A b c) :
-  Path (Path A a c) (compPath A a b c p r) (compPath A a b c p r) =
-  refl (Path A a c) (compPath A a b c p r)
+  Path (Path A a c) (compPath A a b c p r) (compPath A a b c q r) =
+  <i> compPath A a b c (alpha @ i) r
 
 lWhiskering (A : U) (a b c : A) (r s : Path A b c) (q : Path A a b)
   (beta : Path (Path A b c) r s) :
   Path (Path A a c) (compPath A a b c q r) (compPath A a b c q s) =
-  undefined
+  <i> compPath A a b c q (beta @ i)
 
 apInd (A B : U) (f : A -> B) (x y : A)
       (p : Path A x y) : Path B (f x) (f y) =
