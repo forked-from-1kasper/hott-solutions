@@ -101,7 +101,7 @@ horizontalComp (A : U) (a b c : A) (p q : Path A a b) (r s : Path A b c)
   Path (Path A a c) (compPath A a b c p r) (compPath A a b c q s) =
   compPath (Path A a c)
     (compPath A a b c p r)
-    (compPath  A a b c q r)
+    (compPath A a b c q r)
     (compPath A a b c q s)
     (rWhiskering A a b c p q alpha r)
     (lWhiskering A a b c r s q beta)
