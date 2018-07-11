@@ -123,3 +123,6 @@ trans (A : U) (P : A -> U) (x y : A) (p : Path A x y) : P x -> P y =
   where
     D (x y : A) (p : Path A x y) : U = P x -> P y
     d (x : A) : D x x (refl A x) = idfun (P x)
+
+homotopy (A : U) (P : A -> U) (f g : (x : A) -> P x) : U =
+  (x : A) -> Path (P x) (f x) (g x)
