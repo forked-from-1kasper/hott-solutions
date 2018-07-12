@@ -83,12 +83,12 @@ lemma4Ind
                     (compPath A x z w (compPath A x y z p q) r) =
   undefined
 
-pointedType : U = (A : U) * A
+Pointed : U = (A : U) * A
 
-loopSpace (A : pointedType) : pointedType =
+loopSpace (A : Pointed) : Pointed =
   (Path A.1 A.2 A.2, refl A.1 A.2)
 
-iterLoopSpace (A : pointedType) : Nat -> pointedType = split
+iterLoopSpace (A : Pointed) : Nat -> Pointed = split
   zero -> loopSpace A
   succ n -> iterLoopSpace (loopSpace A) n
 
