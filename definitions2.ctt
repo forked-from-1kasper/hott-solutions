@@ -2,10 +2,6 @@ module definitions2 where
 
 import hott1
 
---indPath (A : U) (C : (x y : A) -> Path A x y -> U)
---        (c : (x : A) -> C x x (refl A x)) :
---	(x y : A) -> (p : Path A x y) -> C x y p
-
 pathSymInd (A : U) (x y : A) (p : Path A x y) : Path A y x =
   indPath A D d x y p
   where
