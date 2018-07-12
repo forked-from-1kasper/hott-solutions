@@ -71,7 +71,6 @@ lemma3 (A : U) (x y : A) (p : Path A x y) :
       Path (Path A x y) (pathSym A y x (pathSym A x y p)) p
     d (x : A) : D x x (refl A x) = refl (Path A x x) (refl A x)
 
--- FFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
 lemma4Ind
     (A : U) (x y z w : A) (p : Path A x y)
     (q : Path A y z) (r : Path A z w) :
