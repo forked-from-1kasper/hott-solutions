@@ -140,3 +140,14 @@ homotopyTrans (A : U) (P : A -> U) (f g h : (x : A) -> P x)
   \(x : A) -> <i> comp (refl U (P x)) (g x)
     [ (i = 0) -> <j> (h1 x) @ -j,
       (i = 1) -> h2 x ]
+
+qinv (A B : U) (f : A -> B) : U =
+  (g : B -> A) *
+  (alpha : homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)) *
+  (homotopy A (\(_ : A) -> A) (compose A B A g f) (idfun A))
+
+isEquiv (A B : U) (f : A -> B) : U =
+  Tuple ((g : B -> A) -> homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B))
+        ((h : B -> A) -> homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A))
+
+Equiv (A : U) (B : U) : U = (f : A -> B) -> isEquiv A B f
