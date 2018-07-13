@@ -151,3 +151,15 @@ isEquiv (A B : U) (f : A -> B) : U =
         ((h : B -> A) -> homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A))
 
 Equiv (A : U) (B : U) : U = (f : A -> B) -> isEquiv A B f
+
+tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
+  Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
+        (Path B (pr2Tuple A B x) (pr2Tuple A B y)) =
+  pair (<i> pr1Tuple A B (p @ i)) (<i> pr2Tuple A B (p @ i))
+
+tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
+  isEquiv (Path (Tuple A B) x y)
+          (Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
+                 (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
+          (tupleMap A B x y) = undefined
+
