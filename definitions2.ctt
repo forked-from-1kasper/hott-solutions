@@ -127,3 +127,16 @@ trans (A : U) (P : A -> U) (x y : A) (p : Path A x y) : P x -> P y =
 
 homotopy (A : U) (P : A -> U) (f g : (x : A) -> P x) : U =
   (x : A) -> Path (P x) (f x) (g x)
+
+homotopyIdentity (A : U) (P : A -> U) (f : (x : A) -> P x) : homotopy A P f f =
+  \(x : A) -> refl (P x) (f x)
+
+homotopyInverse (A : U) (P : A -> U) (f g : (x : A) -> P x) (h : homotopy A P f g) :
+  homotopy A P g f =
+  \(x : A) -> <i> (h x) @ -i
+
+homotopyTrans (A : U) (P : A -> U) (f g h : (x : A) -> P x)
+  (h1 : homotopy A P f g) (h2 : homotopy A P g h) : homotopy A P f h =
+  \(x : A) -> <i> comp (refl U (P x)) (g x)
+    [ (i = 0) -> <j> (h1 x) @ -j,
+      (i = 1) -> h2 x ]
