@@ -147,10 +147,10 @@ qinv (A B : U) (f : A -> B) : U =
   (homotopy A (\(_ : A) -> A) (compose A B A g f) (idfun A))
 
 isEquiv (A B : U) (f : A -> B) : U =
-  Tuple ((g : B -> A) -> homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B))
-        ((h : B -> A) -> homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A))
+  Tuple ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
+        ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
 
-Equiv (A : U) (B : U) : U = (f : A -> B) -> isEquiv A B f
+Equiv (A : U) (B : U) : U = (f : A -> B) * (isEquiv A B f)
 
 tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
@@ -163,3 +163,7 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
+
+--indUnit (C : Unit -> U) (c : C tt) : (x : Unit) -> C x
+unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
+  undefined
