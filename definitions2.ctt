@@ -166,4 +166,15 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
 
 --indUnit (C : Unit -> U) (c : C tt) : (x : Unit) -> C x
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
-  undefined
+  (const Unit (Path Unit x y) tt,
+   pair (const (Path Unit x y) Unit (unitIsContr x y), uniqUnitRev)
+        (const (Path Unit x y) Unit (unitIsContr x y), hole))
+  where
+    unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
+      tt -> uniqUnit x
+    uniqUnitRev (x : Unit) : Path Unit tt x =
+      <i> (uniqUnit x) @ -i
+    unitPathUniq (x : Unit) : (y : Unit) -> (p q : Path Unit x y) ->
+      Path (Path Unit x y) p q = undefined
+    hole (z : Path Unit x y) : Path (Path Unit x y) (unitIsContr x y) z =
+      unitPathUniq x y (unitIsContr x y) z
