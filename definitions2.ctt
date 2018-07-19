@@ -164,7 +164,6 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
           (tupleMap A B x y) = undefined
 
 
---indUnit (C : Unit -> U) (c : C tt) : (x : Unit) -> C x
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
   (const Unit (Path Unit x y) tt,
    pair (const (Path Unit x y) Unit (unitIsContr x y), uniqUnitRev)
