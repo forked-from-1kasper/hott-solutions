@@ -1,0 +1,4 @@
+module definitions3 where
+import hott2
+
+isSet (A : U) : U = (x y : A) -> (p q : Path A x y) -> Path (Path A x y) p q
