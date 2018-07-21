@@ -163,7 +163,6 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
-
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
   (const Unit (Path Unit x y) tt,
    pair (const (Path Unit x y) Unit (unitIsContr x y), uniqUnitRev)

@@ -12,3 +12,13 @@ Type1 (A : U) : U = (x y : A) -> (p q : Path A x y) -> (r s : Path (Path A x y) 
   Path (Path (Path A x y) p q) r s
 
 isProp (P : U) : U = (x y : P) -> (Path P x y)
+
+LEM : U = (A : U) -> isProp A -> Sigma A (not A)
+lawOfDoubleNegation : U = (A : U) -> isProp A -> (not (not A) -> A)
+higherLEM : U = (A : U) -> Sigma A (not A)
+
+isDecidable (A : U) : U = Sigma A (not A)
+isDecidableFamily (A : U) (B : A -> U) : U = (a : A) -> Sigma (B a) (not (B a))
+
+SetUniverse : U = (A : U) * (isSet A)
+PropUniverse : U = (A : U) * (isProp A)
