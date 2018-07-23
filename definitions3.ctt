@@ -1,7 +1,8 @@
 module definitions3 where
 import hott2
 
-isSet (A : U) : U = (x y : A) -> (p q : Path A x y) -> Path (Path A x y) p q
+isSet (A : U) : U = (x y : A) ->
+  (p q : Path A x y) -> Path (Path A x y) p q
 
 unitTypeIsSet : isSet Unit = undefined
 emptyTypeIsSet : isSet Empty =
@@ -13,6 +14,11 @@ Type1 (A : U) : U = (x y : A) -> (p q : Path A x y) -> (r s : Path (Path A x y) 
 
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
+
+invProp (P Q : U) (propP : isProp P) (propQ : isProp Q)
+  (f : P -> Q) (g : Q -> P) : Equiv P Q =
+  (f, pair (g, (\(x : Q) -> propQ (f (g x)) x))
+           (g, (\(x : P) -> propP (g (f x)) x)))
 
 LEM : U = (A : U) -> isProp A -> Sigma A (not A)
 lawOfDoubleNegation : U = (A : U) -> isProp A -> (not (not A) -> A)
@@ -41,3 +47,18 @@ Iff (P Q : U) : U = Path U P Q
 Or (P Q : U) : U = trunc (Sigma P Q)
 Forall (A : U) (P : A -> U) : U = (x : A) -> P x
 Exists (A : U) (P : A -> U) : U = trunc ((x : A) * (P x))
+
+Intersection (A : U) (P Q : A -> U)
+  (p : (x : A) * P x) (q : (x : A) * P x) : U =
+  (x : A) * And (P x) (Q x)
+
+Union (A : U) (P Q : A -> U)
+  (p : (x : A) * P x) (q : (x : A) * P x) : U =
+  (x : A) * Or (P x) (Q x)
+
+AC (X : U) (setX : isSet X)
+  (A : X -> U) (setA : (x : X) -> A x)
+  (P : (x : X) -> A x -> U)
+  (propP : (x : X) -> (a : A x) -> isProp (P x a)) :
+  ((x : X) -> trunc ((a : A x) * (P x a))) ->
+  trunc ((g : (x : X) -> A x) * ((x : X) -> P x (g x))) = undefined
