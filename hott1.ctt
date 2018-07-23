@@ -58,9 +58,14 @@ recNatFromIter' (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
 recNatFromIter (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) : C =
   (recNatFromIter' C c0 cs n).2
 
+double' : Nat -> Nat =
+  recNatFromIter Nat zero (\(n : Nat) (y : Nat) -> succ (succ y))
+
 recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) : (n : Nat) ->
   Path (Sigma Nat C) (n, recNat C c0 cs n)
-                     (recNatFromIter' C c0 cs n) = undefined
+                     (recNatFromIter' C c0 cs n) = split
+  zero -> refl (Sigma Nat C) (zero, c0)
+  succ n -> ?
 
 -- exercise 1.5
 

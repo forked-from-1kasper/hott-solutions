@@ -12,6 +12,7 @@ Type1 (A : U) : U = (x y : A) -> (p q : Path A x y) -> (r s : Path (Path A x y) 
   Path (Path (Path A x y) p q) r s
 
 isProp (P : U) : U = (x y : P) -> (Path P x y)
+Prop : U = (P : U) * (isProp P)
 
 LEM : U = (A : U) -> isProp A -> Sigma A (not A)
 lawOfDoubleNegation : U = (A : U) -> isProp A -> (not (not A) -> A)
@@ -22,3 +23,21 @@ isDecidableFamily (A : U) (B : A -> U) : U = (a : A) -> Sigma (B a) (not (B a))
 
 SetUniverse : U = (A : U) * (isSet A)
 PropUniverse : U = (A : U) * (isProp A)
+
+data trunc (A : U) =
+    elem (a : A)
+  | uniq (x y : trunc A) <i>
+    [ (i = 0) -> x, (i = 1) -> y ]
+
+recTrunc (A B : U) (prop : isProp B) (f : A -> B) (g : trunc A -> B) : (a : A) -> Path B (g (elem a)) (f a) =
+  \(a : A) -> prop (g (elem a)) (f a)
+
+True : U = Unit
+False : U = Empty
+And (P Q : U) : U = Tuple P Q
+Implies (P Q : U) : U = P -> Q
+Iff (P Q : U) : U = Path U P Q
+-- Not is already defined
+Or (P Q : U) : U = trunc (Sigma P Q)
+Forall (A : U) (P : A -> U) : U = (x : A) -> P x
+Exists (A : U) (P : A -> U) : U = trunc ((x : A) * (P x))
