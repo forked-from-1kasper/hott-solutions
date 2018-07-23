@@ -62,3 +62,5 @@ AC (X : U) (setX : isSet X)
   (propP : (x : X) -> (a : A x) -> isProp (P x a)) :
   ((x : X) -> trunc ((a : A x) * (P x a))) ->
   trunc ((g : (x : X) -> A x) * ((x : X) -> P x (g x))) = undefined
+
+isContr (A : U) : U = (a : A) * ((x : A) -> Path A a x)
