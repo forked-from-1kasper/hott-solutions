@@ -35,7 +35,8 @@ data trunc (A : U) =
   | uniq (x y : trunc A) <i>
     [ (i = 0) -> x, (i = 1) -> y ]
 
-recTrunc (A B : U) (prop : isProp B) (f : A -> B) (g : trunc A -> B) : (a : A) -> Path B (g (elem a)) (f a) =
+recTrunc (A B : U) (prop : isProp B) (f : A -> B) (g : trunc A -> B) :
+  (a : A) -> Path B (g (elem a)) (f a) =
   \(a : A) -> prop (g (elem a)) (f a)
 
 True : U = Unit
