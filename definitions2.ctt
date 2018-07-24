@@ -107,12 +107,18 @@ horizontalComp (A : U) (a b c : A) (p q : Path A a b) (r s : Path A b c)
     (rWhiskering A a b c p q alpha r)
     (lWhiskering A a b c r s q beta)
 
-apInd (A B : U) (f : A -> B) (x y : A)
-      (p : Path A x y) : Path B (f x) (f y) =
-   indPath A D d x y p
+apIndAccuracy
+  (A B : U) (f : A -> B) (x y : A)
+  (p : Path A x y) : Path B (f x) (f y) =
+  indPath A D d x y p
    where
      D (x y : A) (p : Path A x y) : U = Path B (f x) (f y)
      d (x : A) : D x x (refl A x) = refl B (f x)
+
+apInd (A B : U) (f : A -> B) (x y : A)
+      (p : Path A x y) : Path B (f x) (f y) =
+   indPath A (\(x y : A) (_ : Path A x y) -> Path B (f x) (f y))
+             (\(x : A) -> refl B (f x)) x y p
 
 -- DOUBLE FFFFUUUU
 ap (A B : U) (f : A -> B) (x y : A)
@@ -176,3 +182,15 @@ unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
       Path (Path Unit x y) p q = undefined
     hole (z : Path Unit x y) : Path (Path Unit x y) (unitIsContr x y) z =
       unitPathUniq x y (unitIsContr x y) z
+
+happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
+  (Path ((x : A) -> B x) f g) ->
+  (x : A) -> (Path (B x) (f x) (g x)) =
+  \(p : Path ((x : A) -> B x) f g) (x : A) ->
+    <i> (p @ i) x
+
+funext (A : U) (B : A -> U) (f g : (x : A) -> B x) :
+  isEquiv (Path ((x : A) -> B x) f g)
+          ((x : A) -> (Path (B x) (f x) (g x)))
+          (happly A B f g) =
+  undefined
