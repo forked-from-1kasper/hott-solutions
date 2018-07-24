@@ -189,8 +189,12 @@ happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   \(p : Path ((x : A) -> B x) f g) (x : A) ->
     <i> (p @ i) x
 
-funext (A : U) (B : A -> U) (f g : (x : A) -> B x) :
+funextAxiom (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   isEquiv (Path ((x : A) -> B x) f g)
           ((x : A) -> (Path (B x) (f x) (g x)))
           (happly A B f g) =
   undefined
+
+funext (A : U) (B : A -> U) (f g : (x : A) -> B x) :
+  (x : A) -> (Path (B x) (f x) (g x)) ->
+  (Path ((x : A) -> B x) f g) = ?
