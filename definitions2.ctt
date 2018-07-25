@@ -191,13 +191,30 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
+unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
+  indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
+    (q : Path Unit x y) -> Path (Path Unit x y) p q)
+    hole x y p q
+  where
+    hole (x : Unit) (p : Path Unit x x) :
+      Path (Path Unit x x) (refl Unit x) p = ?
+
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
   (\(p : Path Unit x y) -> tt,
    \(z : Unit) -> ((unitIsContr x y, <i> (uniqUnit z) @ -i),
-                   ?))
+                    hole z))
   where
+    uniqUnit : (x : Unit) -> Path Unit x tt = split
+      tt -> refl Unit tt
     unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
       tt -> uniqUnit x
+    searchPath (x y z : Unit) (h : (g : Path Unit x y) * (Path Unit tt z)) : U =
+      Path ((g : Path Unit x y) * Path Unit tt z)
+           (unitIsContr x y,
+            <i> uniqUnit z @ -i) h
+    hole : (z : Unit) -> (h : (g : Path Unit x y) * (Path Unit tt z)) ->
+      searchPath x y z h = split
+      tt -> \(h : (g : Path Unit x y) * (Path Unit tt tt)) -> ?
 
 happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   (Path ((x : A) -> B x) f g) ->
