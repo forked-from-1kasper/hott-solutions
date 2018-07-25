@@ -195,6 +195,25 @@ funextAxiom (A : U) (B : A -> U) (f g : (x : A) -> B x) :
           (happly A B f g) =
   undefined
 
-funext (A : U) (B : A -> U) (f g : (x : A) -> B x) :
-  (x : A) -> (Path (B x) (f x) (g x)) ->
-  (Path ((x : A) -> B x) f g) = ?
+funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
+  (h : (x : A) -> Path (B x) (f x) (g x)) :
+  (Path ((x : A) -> B x) f g) =
+  <i> \(x : A) -> (h x) @ i
+
+-- Path B (comp B (comp p
+--        (comp A (comp A
+--        (comp A (comp A
+--        (comp rev (comp B
+--        (comp B (comp B x
+--          []) []) []) []) []) []) []) []) []) []) x
+-- WTF?
+idtoeqv (A B : U) (p : Path U A B) : Equiv A B =
+  (trans U (idfun U) A B p,
+   pair (trans U (idfun U) B A rev, \(x : B) -> ?)
+        (trans U (idfun U) B A rev, \(x : A) -> ?))
+  where
+    rev : Path U B A = <i> p @ -i
+    emptiness (A : U) (a : A) : Path A (comp (refl U A) a []) a =
+      <i> fill (refl U A) a [] @ -i
+
+ua (A B : U) : isEquiv (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
