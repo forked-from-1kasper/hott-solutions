@@ -169,6 +169,17 @@ isContrFiber (A B : U) (f : A -> B) : U =
 -- this is also equiv
 Equiv (A B : U) : U = (f : A -> B) * (isContrFiber A B f)
 
+invPath (A : U) (x y : A) (p : Path A x y) : Path A y x =
+  <i> p @ -i
+
+equivId (A : U) : Equiv A A =
+  (idfun A, \(a : A) ->
+    ((a, refl A a), hole a))
+  where
+    hole (a : A) (p : (x : A) * Path A x a) :
+      Path ((x : A) * Path A x a) (a, <i> a) p =
+      <i> (p.2 @ -i, <j> p.2 @ -i \/ j)
+
 tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
         (Path B (pr2Tuple A B x) (pr2Tuple A B y)) =
@@ -205,6 +216,7 @@ funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
   (Path ((x : A) -> B x) f g) =
   <i> \(x : A) -> (h x) @ i
 
-idtoeqv (A B : U) (p : Path U A B) : Equiv A B = ?
+idtoeqv (A B : U) (p : Path U A B) : Equiv A B =
+  transport (<i> Equiv A (p @ i)) (equivId A)
 
 ua (A B : U) : isContrFiber (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
