@@ -1,6 +1,6 @@
 module definitions2 where
-
 import hott1
+import contr
 
 pathSymInd (A : U) (x y : A) (p : Path A x y) : Path A y x =
   indPath A D d x y p
@@ -156,7 +156,18 @@ isEquiv (A B : U) (f : A -> B) : U =
   Tuple ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
         ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
 
-Equiv (A : U) (B : U) : U = (f : A -> B) * (isEquiv A B f)
+Equiv1 (A B : U) : U = (f : A -> B) * (isEquiv A B f)
+
+-- 4.2.4
+fiber (A B : U) (f : A -> B) (y : B) : U =
+  (x : A) * Path B (f x) y
+
+-- 4.4.1
+isContrFiber (A B : U) (f : A -> B) : U =
+  (y : B) -> isContr (fiber A B f y)
+
+-- this is also equiv
+Equiv (A B : U) : U = (f : A -> B) * (isContrFiber A B f)
 
 tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
@@ -170,18 +181,12 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
           (tupleMap A B x y) = undefined
 
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
-  (const Unit (Path Unit x y) tt,
-   pair (const (Path Unit x y) Unit (unitIsContr x y), uniqUnitRev)
-        (const (Path Unit x y) Unit (unitIsContr x y), hole))
+  (\(p : Path Unit x y) -> tt,
+   \(z : Unit) -> ((unitIsContr x y, <i> (uniqUnit z) @ -i),
+                   ?))
   where
     unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
       tt -> uniqUnit x
-    uniqUnitRev (x : Unit) : Path Unit tt x =
-      <i> (uniqUnit x) @ -i
-    unitPathUniq (x : Unit) : (y : Unit) -> (p q : Path Unit x y) ->
-      Path (Path Unit x y) p q = undefined
-    hole (z : Path Unit x y) : Path (Path Unit x y) (unitIsContr x y) z =
-      unitPathUniq x y (unitIsContr x y) z
 
 happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   (Path ((x : A) -> B x) f g) ->
@@ -200,20 +205,6 @@ funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
   (Path ((x : A) -> B x) f g) =
   <i> \(x : A) -> (h x) @ i
 
--- Path B (comp B (comp p
---        (comp A (comp A
---        (comp A (comp A
---        (comp rev (comp B
---        (comp B (comp B x
---          []) []) []) []) []) []) []) []) []) []) x
--- WTF?
-idtoeqv (A B : U) (p : Path U A B) : Equiv A B =
-  (trans U (idfun U) A B p,
-   pair (trans U (idfun U) B A rev, \(x : B) -> ?)
-        (trans U (idfun U) B A rev, \(x : A) -> ?))
-  where
-    rev : Path U B A = <i> p @ -i
-    emptiness (A : U) (a : A) : Path A (comp (refl U A) a []) a =
-      <i> fill (refl U A) a [] @ -i
+idtoeqv (A B : U) (p : Path U A B) : Equiv A B = ?
 
-ua (A B : U) : isEquiv (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
+ua (A B : U) : isContrFiber (Path U A B) (Equiv A B) (idtoeqv A B) = undefined

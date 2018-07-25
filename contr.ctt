@@ -1,0 +1,4 @@
+module contr where
+import basic
+
+isContr (A : U) : U = (a : A) * ((x : A) -> Path A a x)

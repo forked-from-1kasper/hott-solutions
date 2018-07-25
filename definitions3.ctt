@@ -1,5 +1,6 @@
 module definitions3 where
 import hott2
+import contr
 
 isSet (A : U) : U = (x y : A) ->
   (p q : Path A x y) -> Path (Path A x y) p q
@@ -16,7 +17,7 @@ isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
 
 invProp (P Q : U) (propP : isProp P) (propQ : isProp Q)
-  (f : P -> Q) (g : Q -> P) : Equiv P Q =
+  (f : P -> Q) (g : Q -> P) : Equiv1 P Q =
   (f, pair (g, (\(x : Q) -> propQ (f (g x)) x))
            (g, (\(x : P) -> propP (g (f x)) x)))
 
@@ -63,5 +64,3 @@ AC (X : U) (setX : isSet X)
   (propP : (x : X) -> (a : A x) -> isProp (P x a)) :
   ((x : X) -> trunc ((a : A x) * (P x a))) ->
   trunc ((g : (x : X) -> A x) * ((x : X) -> P x (g x))) = undefined
-
-isContr (A : U) : U = (a : A) * ((x : A) -> Path A a x)
