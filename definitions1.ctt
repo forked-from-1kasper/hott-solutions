@@ -20,7 +20,7 @@ uniqTuple (A B : U) : (x : Tuple A B) ->
 
 indTuple (A B C : U) (C : Tuple A B -> U)
          (g : (x : A) -> (y : B) -> C (pair x y)) :
-	 (x : Tuple A B) -> C x = split
+   (x : Tuple A B) -> C x = split
   pair a b -> g a b
 
 recUnit (C : U) (c : C) (_ : Unit) : C = c

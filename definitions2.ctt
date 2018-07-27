@@ -191,30 +191,30 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
+--<k j> comp (refl U A) (refl A x @ k /\ j)
+--        [ (j = 0) -> refl A x,
+--          (j = 1) -> refl A x,
+--          (k = 1) -> <i> refl A x @ k /\ i ]
+
+onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
+  Path (Path Unit x x) (refl Unit x) p =
+  undefined
+
 unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
   indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
     (q : Path Unit x y) -> Path (Path Unit x y) p q)
-    hole x y p q
-  where
-    hole (x : Unit) (p : Path Unit x x) :
-      Path (Path Unit x x) (refl Unit x) p = ?
+    onlyReflInPathUnit x y p q
+
+unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
+  tt -> uniqUnit x
 
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
-  (\(p : Path Unit x y) -> tt,
-   \(z : Unit) -> ((unitIsContr x y, <i> (uniqUnit z) @ -i),
-                    hole z))
-  where
-    uniqUnit : (x : Unit) -> Path Unit x tt = split
-      tt -> refl Unit tt
-    unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
-      tt -> uniqUnit x
-    searchPath (x y z : Unit) (h : (g : Path Unit x y) * (Path Unit tt z)) : U =
-      Path ((g : Path Unit x y) * Path Unit tt z)
-           (unitIsContr x y,
-            <i> uniqUnit z @ -i) h
-    hole : (z : Unit) -> (h : (g : Path Unit x y) * (Path Unit tt z)) ->
-      searchPath x y z h = split
-      tt -> \(h : (g : Path Unit x y) * (Path Unit tt tt)) -> ?
+  (\(p : Path Unit x y) -> x,
+   \(z : Unit) ->
+     ((unitIsContr x y, unitIsContr x z),
+      \(h : Sigma (Path Unit x y) (Path Unit x z)) ->
+        <i> (unitPathUniq x y (unitIsContr x y) h.1 @ i,
+             unitPathUniq x z (unitIsContr x z) h.2 @ i)))
 
 happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   (Path ((x : A) -> B x) f g) ->
