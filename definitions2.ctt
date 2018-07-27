@@ -156,11 +156,11 @@ isEquiv (A B : U) (f : A -> B) : U =
   Tuple ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
         ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
 
-Equiv1 (A B : U) : U = (f : A -> B) * (isEquiv A B f)
+EquivTrivial (A B : U) : U = (f : A -> B) * (isEquiv A B f)
 
--- 4.2.4
+-- 4.2.4, with reversed path
 fiber (A B : U) (f : A -> B) (y : B) : U =
-  (x : A) * Path B (f x) y
+  (x : A) * Path B y (f x)
 
 -- 4.4.1
 isContrFiber (A B : U) (f : A -> B) : U =
@@ -176,9 +176,9 @@ equivId (A : U) : Equiv A A =
   (idfun A, \(a : A) ->
     ((a, refl A a), hole a))
   where
-    hole (a : A) (p : (x : A) * Path A x a) :
-      Path ((x : A) * Path A x a) (a, <i> a) p =
-      <i> (p.2 @ -i, <j> p.2 @ -i \/ j)
+    hole (a : A) (p : (x : A) * Path A a x) :
+      Path ((x : A) * Path A a x) (a, <i> a) p =
+      <i> (p.2 @ i, <j> p.2 @ i /\ j)
 
 tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
@@ -191,14 +191,8 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
---<k j> comp (refl U A) (refl A x @ k /\ j)
---        [ (j = 0) -> refl A x,
---          (j = 1) -> refl A x,
---          (k = 1) -> <i> refl A x @ k /\ i ]
-
 onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
-  Path (Path Unit x x) (refl Unit x) p =
-  undefined
+  Path (Path Unit x x) (refl Unit x) p = undefined
 
 unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
   indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
@@ -211,10 +205,10 @@ unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
   (\(p : Path Unit x y) -> x,
    \(z : Unit) ->
-     ((unitIsContr x y, unitIsContr x z),
-      \(h : Sigma (Path Unit x y) (Path Unit x z)) ->
+     ((unitIsContr x y, unitIsContr z x),
+      \(h : Sigma (Path Unit x y) (Path Unit z x)) ->
         <i> (unitPathUniq x y (unitIsContr x y) h.1 @ i,
-             unitPathUniq x z (unitIsContr x z) h.2 @ i)))
+             unitPathUniq z x (unitIsContr z x) h.2 @ i)))
 
 happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   (Path ((x : A) -> B x) f g) ->

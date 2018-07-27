@@ -17,7 +17,7 @@ isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
 
 invProp (P Q : U) (propP : isProp P) (propQ : isProp Q)
-  (f : P -> Q) (g : Q -> P) : Equiv1 P Q =
+  (f : P -> Q) (g : Q -> P) : EquivTrivial P Q =
   (f, pair (g, (\(x : Q) -> propQ (f (g x)) x))
            (g, (\(x : P) -> propP (g (f x)) x)))
 
