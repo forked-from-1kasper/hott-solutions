@@ -191,7 +191,7 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
-onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
+onlyReflInPathUnit : (x : Unit) -> (p : Path Unit x x) ->
   Path (Path Unit x x) (refl Unit x) p = undefined
 
 unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =

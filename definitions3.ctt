@@ -5,13 +5,24 @@ import contr
 isSet (A : U) : U = (x y : A) ->
   (p q : Path A x y) -> Path (Path A x y) p q
 
-unitTypeIsSet : isSet Unit = undefined
+unitTypeIsSet : isSet Unit =
+  \(x y : Unit) (p q : Path Unit x y) ->
+    unitPathUniq x y p q
+
 emptyTypeIsSet : isSet Empty =
   \(x y : Empty) (p q : Path Empty x y) ->
     recEmpty (Path (Path Empty x y) p q) x
 
 Type1 (A : U) : U = (x y : A) -> (p q : Path A x y) -> (r s : Path (Path A x y) p q) ->
   Path (Path (Path A x y) p q) r s
+
+negationOfDoubleNegation (A : U) : not (not (not A) -> A) =
+  undefined
+
+negationOfLawOfExcludedMiddle (A : U) : not (Coproduct A (not A)) = split
+  inl a -> negationOfDoubleNegation A (\(h : (A -> Empty) -> Empty) -> a)
+  inr a -> negationOfDoubleNegation A (\(h : (A -> Empty) -> Empty) ->
+    recEmpty A (h a))
 
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
