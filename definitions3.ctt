@@ -75,3 +75,13 @@ AC (X : U) (setX : isSet X)
   (propP : (x : X) -> (a : A x) -> isProp (P x a)) :
   ((x : X) -> trunc ((a : A x) * (P x a))) ->
   trunc ((g : (x : X) -> A x) * ((x : X) -> P x (g x))) = undefined
+
+univTruncProp (A B : U) (prop : isProp B) (f : A -> B) : trunc A -> B = split
+  elem a -> f a
+  uniq x y @ i ->
+    prop (univTruncProp A B prop f x) (univTruncProp A B prop f y) @ i
+
+propEquivTruncatedProp (P : U) (prop : isProp P) : Equiv P (trunc P) =
+  (\(p : P) -> elem p,
+   \(p : trunc P) ->
+     ((univTruncProp P P prop (idfun P) p, ?), ?))
