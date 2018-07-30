@@ -81,7 +81,13 @@ univTruncProp (A B : U) (prop : isProp B) (f : A -> B) : trunc A -> B = split
   uniq x y @ i ->
     prop (univTruncProp A B prop f x) (univTruncProp A B prop f y) @ i
 
+fromTrunc (P : U) (prop : isProp P) : trunc P -> P =
+  univTruncProp P P prop (idfun P)
+
 propEquivTruncatedProp (P : U) (prop : isProp P) : Equiv P (trunc P) =
   (\(p : P) -> elem p,
    \(p : trunc P) ->
-     ((univTruncProp P P prop (idfun P) p, ?), ?))
+     ((fromTrunc P prop p, hole p), ?))
+  where
+    hole : (p : trunc P) ->
+      Path (trunc P) p (elem (univTruncProp P P prop (idfun P) p)) = undefined
