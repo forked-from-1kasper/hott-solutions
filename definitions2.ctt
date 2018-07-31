@@ -191,7 +191,7 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
-onlyReflInPathUnit : (x : Unit) -> (p : Path Unit x x) ->
+onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
   Path (Path Unit x x) (refl Unit x) p = undefined
 
 unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
@@ -202,13 +202,28 @@ unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
 unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
   tt -> uniqUnit x
 
+unitEquivTrivial (x y : Unit) : EquivTrivial (Path Unit x y) Unit =
+  (\(p : Path Unit x y) -> tt,
+   pair (backFunc x y, unitIsContr tt)
+        (backFunc x y, hole))
+  where
+    backFunc : (x y : Unit) -> Unit -> Path Unit x y = split
+      tt -> split@((y : Unit) -> Unit -> Path Unit tt y) with
+        tt -> \(z : Unit) -> refl Unit tt
+    hole (p : Path Unit x y) : Path (Path Unit x y) (backFunc x y tt) p =
+      indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
+                     Path (Path Unit x y) (backFunc x y tt) p)
+        (\(z : Unit) -> indUnit (\(z : Unit) ->
+          Path (Path Unit z z) (backFunc z z tt) (refl Unit z))
+          (refl (Path Unit tt tt) (refl Unit tt)) z) x y p
+
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
-  (\(p : Path Unit x y) -> x,
+  (\(p : Path Unit x y) -> tt,
    \(z : Unit) ->
-     ((unitIsContr x y, unitIsContr z x),
-      \(h : Sigma (Path Unit x y) (Path Unit z x)) ->
+     ((unitIsContr x y, unitIsContr z tt),
+      \(h : Sigma (Path Unit x y) (Path Unit z tt)) ->
         <i> (unitPathUniq x y (unitIsContr x y) h.1 @ i,
-             unitPathUniq z x (unitIsContr z x) h.2 @ i)))
+             unitPathUniq z tt (unitIsContr z tt) h.2 @ i)))
 
 happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   (Path ((x : A) -> B x) f g) ->
