@@ -172,6 +172,10 @@ Equiv (A B : U) : U = (f : A -> B) * (isContrFiber A B f)
 invPath (A : U) (x y : A) (p : Path A x y) : Path A y x =
   <i> p @ -i
 
+equivTrivialId (A : U) : EquivTrivial A A =
+  (idfun A,
+   pair (idfun A, refl A) (idfun A, refl A))
+
 equivId (A : U) : Equiv A A =
   (idfun A, \(a : A) ->
     ((a, refl A a), hole a))
