@@ -161,7 +161,8 @@ addComm (a : Nat) : (b : Nat) -> Path Nat (add a b) (add b a) = split
 zeroIdentityNat : hasIdentity Nat add zero =
   \(x : Nat) -> pair (addZero x) (refl Nat x)
 
-addA (a b : Nat) : (c : Nat) -> Path Nat (add a (add b c)) (add (add a b) c) = split
+addA (a b : Nat) : (c : Nat) ->
+  Path Nat (add a (add b c)) (add (add a b) c) = split
   zero -> <_> add a b
   succ c -> <i> succ (addA a b c @ i)
 
@@ -228,7 +229,8 @@ multDistribLeft (a b c : Nat) :
 multIdentityRight (a : Nat) : Path Nat (mult a (succ zero)) a =
   multComm a (succ zero)
 
-multAssoc (a b : Nat) : (c : Nat) -> Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
+multAssoc (a b : Nat) : (c : Nat) ->
+  Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
   zero -> <i> comp (refl U Nat) (multRightZero a @ -i)
               [ (i = 0) -> <j> mult a (multRightZero b @ j),
                 (i = 1) -> multRightZero (mult a b) ]

@@ -13,8 +13,10 @@ emptyTypeIsSet : isSet Empty =
   \(x y : Empty) (p q : Path Empty x y) ->
     recEmpty (Path (Path Empty x y) p q) x
 
-Type1 (A : U) : U = (x y : A) -> (p q : Path A x y) -> (r s : Path (Path A x y) p q) ->
-  Path (Path (Path A x y) p q) r s
+Type1 (A : U) : U =
+  (x y : A) -> (p q : Path A x y) ->
+  (r s : Path (Path A x y) p q) ->
+    Path (Path (Path A x y) p q) r s
 
 negationOfDoubleNegation (A : U) : not (not (not A) -> A) =
   undefined

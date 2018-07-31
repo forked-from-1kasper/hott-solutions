@@ -69,7 +69,8 @@ indBool (C : Bool -> U) (c0 : C false) (c1 : C true) : (x : Bool) -> C x = split
   false -> c0
   true -> c1
 
-boolIsTrueOrFalse : (x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true) =
+boolIsTrueOrFalse : (x : Bool) ->
+  Coproduct (Path Bool x false) (Path Bool x true) =
   indBool (\(x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true))
           (inl (refl Bool false)) (inr (refl Bool true))
 
@@ -87,18 +88,22 @@ addRec : Nat -> Nat -> Nat =
   recNat (Nat -> Nat) (idfun Nat)
          (\(n : Nat) (g : Nat -> Nat) (m : Nat) -> succ (g m))
 
-assocZero (j k : Nat) : Path Nat (addRec zero (addRec j k)) (addRec (addRec zero j) k) =
+assocZero (j k : Nat) :
+  Path Nat (addRec zero (addRec j k)) (addRec (addRec zero j) k) =
   refl Nat (addRec j k)
 
 apSuc (m n : Nat) (p : Path Nat m n) : Path Nat (succ m) (succ n) =
   <i> succ (p @ i)
 
-assocS (i j k : Nat) (h : Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k)) :
+assocS (i j k : Nat)
+  (h : Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k)) :
   Path Nat (addRec (succ i) (addRec j k)) (addRec (addRec (succ i) j) k) =
   apSuc (addRec i (addRec j k)) (addRec (addRec i j) k) h
 
-assoc (j k : Nat) : (i : Nat) -> Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k) =
-  indNat (\(i : Nat) -> Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k))
+assoc (j k : Nat) : (i : Nat) ->
+  Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k) =
+  indNat (\(i : Nat) ->
+           Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k))
          (assocZero j k) (\(i : Nat) -> assocS i j k)
 
 not (A : U) : U = A -> Empty
