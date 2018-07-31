@@ -137,7 +137,8 @@ homotopy (A : U) (P : A -> U) (f g : (x : A) -> P x) : U =
 homotopyIdentity (A : U) (P : A -> U) (f : (x : A) -> P x) : homotopy A P f f =
   \(x : A) -> refl (P x) (f x)
 
-homotopyInverse (A : U) (P : A -> U) (f g : (x : A) -> P x) (h : homotopy A P f g) :
+homotopyInverse (A : U) (P : A -> U)
+  (f g : (x : A) -> P x) (h : homotopy A P f g) :
   homotopy A P g f =
   \(x : A) -> <i> (h x) @ -i
 
