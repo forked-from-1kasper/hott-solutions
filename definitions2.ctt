@@ -160,6 +160,8 @@ isEquiv (A B : U) (f : A -> B) : U =
 
 EquivTrivial (A B : U) : U = (f : A -> B) * (isEquiv A B f)
 
+uaEquivTrivial (A B : U) : EquivTrivial A B -> Path U A B = undefined
+
 -- 4.2.4, with reversed path
 fiber (A B : U) (f : A -> B) (y : B) : U =
   (x : A) * Path B y (f x)
@@ -197,14 +199,6 @@ tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
                  (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
           (tupleMap A B x y) = undefined
 
-onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
-  Path (Path Unit x x) (refl Unit x) p = undefined
-
-unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
-  indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
-    (q : Path Unit x y) -> Path (Path Unit x y) p q)
-    onlyReflInPathUnit x y p q
-
 unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
   tt -> uniqUnit x
 
@@ -222,6 +216,17 @@ unitEquivTrivial (x y : Unit) : EquivTrivial (Path Unit x y) Unit =
         (\(z : Unit) -> indUnit (\(z : Unit) ->
           Path (Path Unit z z) (backFunc z z tt) (refl Unit z))
           (refl (Path Unit tt tt) (refl Unit tt)) z) x y p
+
+unitPathUnitPath (x y : Unit) : Path U (Path Unit x y) Unit =
+  uaEquivTrivial (Path Unit x y) Unit (unitEquivTrivial x y)
+
+onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
+  Path (Path Unit x x) (refl Unit x) p = undefined
+
+unitPathUniq (x y : Unit) (p q : Path Unit x y) : Path (Path Unit x y) p q =
+  indPath Unit (\(x y : Unit) (p : Path Unit x y) ->
+    (q : Path Unit x y) -> Path (Path Unit x y) p q)
+    onlyReflInPathUnit x y p q
 
 unitEquiv (x y : Unit) : Equiv (Path Unit x y) Unit =
   (\(p : Path Unit x y) -> tt,
