@@ -29,16 +29,10 @@ negationOfLawOfExcludedMiddle (A : U) : not (Coproduct A (not A)) = split
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
 
-propEquivTrivial (P Q : U)
-  (p : isProp P) (q : isProp Q) (f : P -> Q) (g : Q -> P) :
-  EquivTrivial P Q =
+propEquivTrivial (P Q : U) (p : isProp P) (q : isProp Q)
+  (f : P -> Q) (g : Q -> P) : EquivTrivial P Q =
   (f, pair (g, \(x : Q) -> q (f (g x)) x)
            (g, \(y : P) -> p (g (f y)) y))
-
-invProp (P Q : U) (propP : isProp P) (propQ : isProp Q)
-  (f : P -> Q) (g : Q -> P) : EquivTrivial P Q =
-  (f, pair (g, (\(x : Q) -> propQ (f (g x)) x))
-           (g, (\(x : P) -> propP (g (f x)) x)))
 
 LEM : U = (A : U) -> isProp A -> Sigma A (not A)
 lawOfDoubleNegation : U = (A : U) -> isProp A -> (not (not A) -> A)
