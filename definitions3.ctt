@@ -4,6 +4,7 @@ import contr
 
 isSet (A : U) : U = (x y : A) ->
   (p q : Path A x y) -> Path (Path A x y) p q
+Set : U = (A : U) * (isSet A)
 
 unitTypeIsSet : isSet Unit =
   \(x y : Unit) (p q : Path Unit x y) ->
@@ -18,6 +19,8 @@ Type1 (A : U) : U =
   (r s : Path (Path A x y) p q) ->
     Path (Path (Path A x y) p q) r s
 
+setIsType1 (A : U) (set : isSet A) : Type1 A = undefined
+
 negationOfDoubleNegation (A : U) : not (not (not A) -> A) =
   undefined
 
@@ -29,10 +32,33 @@ negationOfLawOfExcludedMiddle (A : U) : not (Coproduct A (not A)) = split
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
 
+propEquivUnit (P : U) (prop : isProp P) (x : P) : EquivTrivial P Unit =
+  (\(x : P) -> tt,
+   pair (\(y : Unit) -> x, unitIsContr tt)
+        (\(y : Unit) -> x, prop x))
+
 propEquivTrivial (P Q : U) (p : isProp P) (q : isProp Q)
   (f : P -> Q) (g : Q -> P) : EquivTrivial P Q =
   (f, pair (g, \(x : Q) -> q (f (g x)) x)
            (g, \(y : P) -> p (g (f y)) y))
+
+-- from lectures from cubicaltt repository
+propIsSet (P : U) (prop : isProp P) : isSet P =
+  \(x y : P) (p q : Path P x y) ->
+    <j i> comp (refl U P) x
+      [ (i = 0) -> prop x x,
+        (i = 1) -> prop x y,
+        (j = 0) -> prop x (p @ i),
+        (j = 1) -> prop x (q @ i) ]
+
+isPropIsProp (P : U) : isProp (isProp P) =
+  \(f g : isProp P) ->
+    <i> \(x y : P) -> propIsSet P f x y (f x y) (g x y) @ i
+
+isSetIsProp (P : U) : isProp (isSet P) =
+  \(f g : isSet P) ->
+    <i> \(x y : P) (p q : Path P x y) ->
+      setIsType1 P f x y p q (f x y p q) (g x y p q) @ i
 
 LEM : U = (A : U) -> isProp A -> Sigma A (not A)
 lawOfDoubleNegation : U = (A : U) -> isProp A -> (not (not A) -> A)
@@ -86,9 +112,14 @@ univTruncProp (A B : U) (prop : isProp B) (f : A -> B) : trunc A -> B = split
 fromTrunc (P : U) (prop : isProp P) : trunc P -> P =
   univTruncProp P P prop (idfun P)
 
--- [ (i = 0) -> truncInv P prop x, (i = 1) -> truncInv P prop y ]
+truncIsProp (P : U) : isProp (trunc P) =
+  \(x y : trunc P) -> <i> uniq{trunc P} x y @ i
+
+truncIsSet (P : U) : isSet (trunc P) =
+  propIsSet (trunc P) (truncIsProp P)
+
 truncInv (P : U) (prop : isProp P) : (p : trunc P) ->
-  Path (trunc P) p (elem (univTruncProp P P prop (idfun P) p)) = undefined
+  Path (trunc P) p (elem (fromTrunc P prop p)) = undefined
 
 propEquivTrivialTruncProp (P : U) (prop : isProp P) : EquivTrivial P (trunc P) =
   (\(p : P) -> elem p,
