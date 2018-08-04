@@ -8,7 +8,6 @@ pathSymInd (A : U) (x y : A) (p : Path A x y) : Path A y x =
     D (x y : A) (p : Path A x y) : U = Path A y x
     d (x : A) : D x x (refl A x) = refl A x
 
--- or this
 pathSym (A : U) (x y : A) (p : Path A x y) : Path A y x =
   <i> p @ -i
 
@@ -120,7 +119,6 @@ apInd (A B : U) (f : A -> B) (x y : A)
    indPath A (\(x y : A) (_ : Path A x y) -> Path B (f x) (f y))
              (\(x : A) -> refl B (f x)) x y p
 
--- DOUBLE FFFFUUUU
 ap (A B : U) (f : A -> B) (x y : A)
    (p : Path A x y) : Path B (f x) (f y) =
    <i> f (p @ i)
