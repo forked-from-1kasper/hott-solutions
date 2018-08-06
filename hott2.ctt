@@ -1,2 +1,39 @@
 module hott2 where
 import definitions2
+
+-- exercise 2.6
+equivFunc (A : U) (x y z : A) (p : Path A x y) :
+  isEquiv (Path A y z) (Path A x z) (compPath A x y z p) =
+  pair
+    (pAndResultToQ, \(q : Path A x z) -> ?)
+    (pAndResultToQ, \(q : Path A y z) -> ?)
+  where
+    pAndResultToQ (q : Path A x z) : Path A y z =
+      <i> comp (refl U A) x [ (i = 0) -> p, (i = 1) -> q ]
+
+-- exercise 2.9
+funEq (A B : U) (f : A -> B) : Path (A -> B) (\(x : A) -> f x) f =
+  <i> \(x : A) -> f x
+
+coproductUnivProp (A B X : U) :
+  EquivTrivial (Coproduct A B -> X) (Tuple (A -> X) (B -> X)) =
+  (func,
+   pair (revFunc, lem1)
+        (revFunc, lem2))
+  where
+    mirror (f : A -> X) (g : B -> X) : (Coproduct A B -> X) = split
+       inl a -> f a
+       inr b -> g b
+    func (f : Coproduct A B -> X) : Tuple (A -> X) (B -> X) =
+      pair (\(a : A) -> f (inl a)) (\(b : B) -> f (inr b))
+    revFunc : (Tuple (A -> X) (B -> X)) -> ((Coproduct A B) -> X) = split
+      pair f g -> mirror f g
+    lem1 : (x : Tuple (A -> X) (B -> X)) ->
+      Path (Tuple (A -> X) (B -> X))
+           (pair (\(a : A) -> revFunc x (inl a))
+                 (\(b : B) -> revFunc x (inr b))) x = split
+      pair f g -> <i> pair (funEq A X f @ i) (funEq B X g @ i)
+    lem2 (f : Coproduct A B -> X) :
+      Path (Coproduct A B -> X)
+           (mirror (\(a : A) -> f (inl a))
+                   (\(b : B) -> f (inr b))) f = undefined

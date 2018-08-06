@@ -127,7 +127,8 @@ propEquivTrivialTruncProp (P : Prop) : EquivTrivial P.1 (trunc P.1) =
 propEquivTruncatedProp (P : Prop) : Equiv P.1 (trunc P.1) =
   (\(p : P.1) -> elem p,
    \(p : trunc P.1) ->
-     ((fromTrunc P p, truncInv P p), ?))
+     ((fromTrunc P p, truncInv P p),
+      \(x : (x : P.1) * (Path (trunc P.1) p (elem x))) -> ?))
 
 contrImpliesProp (A : U) (contr : isContr A) : Tuple A (isProp A) =
   pair contr.1 (\(x y : A) ->
