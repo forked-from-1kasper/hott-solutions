@@ -1,4 +1,4 @@
-My HoTT book (Homotopy Type Theory) solutions.
+My HoTT book (Homotopy Type Theory) solutions written in [cubicaltt](https://github.com/mortberg/cubicaltt).
 
 # Structure
 
