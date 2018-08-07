@@ -12,9 +12,6 @@ equivFunc (A : U) (x y z : A) (p : Path A x y) :
       <i> comp (refl U A) x [ (i = 0) -> p, (i = 1) -> q ]
 
 -- exercise 2.9
-funEq (A B : U) (f : A -> B) : Path (A -> B) (\(x : A) -> f x) f =
-  <i> \(x : A) -> f x
-
 coproductUnivProp (A B X : U) :
   EquivTrivial (Coproduct A B -> X) (Tuple (A -> X) (B -> X)) =
   (func,

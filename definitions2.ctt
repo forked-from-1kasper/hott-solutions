@@ -255,3 +255,26 @@ idtoeqv (A B : U) (p : Path U A B) : Equiv A B =
   transport (<i> Equiv A (p @ i)) (equivId A)
 
 ua (A B : U) : isContrFiber (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
+
+funEq (A B : U) (f : A -> B) : Path (A -> B) (\(x : A) -> f x) f =
+  <i> \(x : A) -> f x
+
+tupleUnivProperty (A B X : U) :
+  EquivTrivial (X -> Tuple A B) (Tuple (X -> A) (X -> B)) =
+  (func,
+   pair (backFunc, lem1)
+        (backFunc, lem2))
+  where
+    func (f : X -> Tuple A B) : Tuple (X -> A) (X -> B) =
+      pair (\(x : X) -> pr1Tuple A B (f x))
+           (\(x : X) -> pr2Tuple A B (f x))
+    backFunc : Tuple (X -> A) (X -> B) -> (X -> Tuple A B) = split
+      pair f g -> \(x : X) -> pair (f x) (g x)
+    lem1 : (x : Tuple (X -> A) (X -> B)) -> Path (Tuple (X -> A) (X -> B))
+      (pair (\(y : X) -> pr1Tuple A B (backFunc x y))
+            (\(y : X) -> pr2Tuple A B (backFunc x y))) x = split
+      pair f g -> <i> pair (funEq X A f @ i) (funEq X B g @ i)
+    lem2 (f : X -> (Tuple A B)) : Path (X -> Tuple A B)
+      (\(x : X) -> pair (pr1Tuple A B (f x))
+                        (pr2Tuple A B (f x))) f =
+      <i> \(x : X) -> uniqTuple A B (f x) @ i
