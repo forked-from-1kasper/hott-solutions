@@ -338,21 +338,25 @@ r : (n : N) -> codeNat n n = split
 encode (m n : N) (p : Path N m n) : codeNat m n =
   trans N (codeNat m) m n p (r m)
 
+decode : (m n : N) -> (p : codeNat m n) -> Path N m n = split
+  zero -> split@((n : N) -> codeNat zero n -> Path N zero n) with
+    zero -> \(p : Unit) -> refl N zero
+    succ n -> recEmpty (Path N zero (succ n))
+  succ m -> split@((n : N) -> codeNat (succ m) n -> Path N (succ m) n) with
+    zero -> recEmpty (Path N (succ m) zero)
+    -- this is win
+    succ n -> \(p : codeNat m n) -> <i> succ (decode m n p @ i)
+
 zeroIsNotSuccessor (m : N) : Path N (succ m) zero -> Empty =
   encode (succ m) zero
+
+succIsInj (m n : N) (p : Path N (succ m) (succ n)) : Path N m n =
+  decode m n (encode (succ m) (succ n) p)
 
 natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
   (encode m n,
    pair (decode m n, lem1) (decode m n, lem2))
   where
-    decode : (m n : N) -> (p : codeNat m n) -> Path N m n = split
-      zero -> split@((n : N) -> codeNat zero n -> Path N zero n) with
-        zero -> \(p : Unit) -> refl N zero
-        succ n -> recEmpty (Path N zero (succ n))
-      succ m -> split@((n : N) -> codeNat (succ m) n -> Path N (succ m) n) with
-        zero -> recEmpty (Path N (succ m) zero)
-        -- this is win
-        succ n -> \(p : codeNat m n) -> <i> succ (decode m n p @ i)
     lem1 (p : codeNat m n) :
       Path (codeNat m n)
            (transport (<i> codeNat m (decode m n p @ i)) (r m)) p = ?
