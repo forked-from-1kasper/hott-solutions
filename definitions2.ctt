@@ -82,7 +82,7 @@ Pointed : U = (A : U) * A
 loopSpace (A : Pointed) : Pointed =
   (Path A.1 A.2 A.2, refl A.1 A.2)
 
-iterLoopSpace (A : Pointed) : Nat -> Pointed = split
+iterLoopSpace (A : Pointed) : N -> Pointed = split
   zero -> loopSpace A
   succ n -> iterLoopSpace (loopSpace A) n
 

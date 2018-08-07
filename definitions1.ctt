@@ -6,7 +6,7 @@ data Tuple (A B : U) = pair (a : A) (b : B)
 data Coproduct (A B : U) = inl (a : A) | inr (b : B)
 data Empty =
 data Bool = false | true
-data Nat = zero | succ (n : Nat)
+data N = zero | succ (n : N)
 
 recTuple (A B C : U) (g : A -> B -> C) : Tuple A B -> C = split
   pair a b -> g a b
@@ -74,37 +74,37 @@ boolIsTrueOrFalse : (x : Bool) ->
   indBool (\(x : Bool) -> Coproduct (Path Bool x false) (Path Bool x true))
           (inl (refl Bool false)) (inr (refl Bool true))
 
-recNat (C : U) (c0 : C) (cs : Nat -> C -> C) : Nat -> C = split
+recNat (C : U) (c0 : C) (cs : N -> C -> C) : N -> C = split
   zero -> c0
   succ n -> cs n (recNat C c0 cs n)
 
-indNat (C : Nat -> U) (c0 : C zero) (cs : (n : Nat) -> C n -> C (succ n)) :
-       (n : Nat) -> C n = split
+indNat (C : N -> U) (c0 : C zero) (cs : (n : N) -> C n -> C (succ n)) :
+       (n : N) -> C n = split
   zero -> c0
   succ n -> cs n (indNat C c0 cs n)
 
-double : Nat -> Nat = recNat Nat zero (\(n : Nat) (y : Nat) -> succ (succ y))
-addRec : Nat -> Nat -> Nat =
-  recNat (Nat -> Nat) (idfun Nat)
-         (\(n : Nat) (g : Nat -> Nat) (m : Nat) -> succ (g m))
+double : N -> N = recNat N zero (\(n : N) (y : N) -> succ (succ y))
+addRec : N -> N -> N =
+  recNat (N -> N) (idfun N)
+         (\(n : N) (g : N -> N) (m : N) -> succ (g m))
 
-assocZero (j k : Nat) :
-  Path Nat (addRec zero (addRec j k)) (addRec (addRec zero j) k) =
-  refl Nat (addRec j k)
+assocZero (j k : N) :
+  Path N (addRec zero (addRec j k)) (addRec (addRec zero j) k) =
+  refl N (addRec j k)
 
-apSuc (m n : Nat) (p : Path Nat m n) : Path Nat (succ m) (succ n) =
+apSuc (m n : N) (p : Path N m n) : Path N (succ m) (succ n) =
   <i> succ (p @ i)
 
-assocS (i j k : Nat)
-  (h : Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k)) :
-  Path Nat (addRec (succ i) (addRec j k)) (addRec (addRec (succ i) j) k) =
+assocS (i j k : N)
+  (h : Path N (addRec i (addRec j k)) (addRec (addRec i j) k)) :
+  Path N (addRec (succ i) (addRec j k)) (addRec (addRec (succ i) j) k) =
   apSuc (addRec i (addRec j k)) (addRec (addRec i j) k) h
 
-assoc (j k : Nat) : (i : Nat) ->
-  Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k) =
-  indNat (\(i : Nat) ->
-           Path Nat (addRec i (addRec j k)) (addRec (addRec i j) k))
-         (assocZero j k) (\(i : Nat) -> assocS i j k)
+assoc (j k : N) : (i : N) ->
+  Path N (addRec i (addRec j k)) (addRec (addRec i j) k) =
+  indNat (\(i : N) ->
+           Path N (addRec i (addRec j k)) (addRec (addRec i j) k))
+         (assocZero j k) (\(i : N) -> assocS i j k)
 
 not (A : U) : U = A -> Empty
 
@@ -125,8 +125,8 @@ splitTuple (A : U) (P Q : A -> U) (g : (x : A) -> Tuple (P x) (Q x)) :
   pair (\(x : A) -> pr1Tuple (P x) (Q x) (g x))
        (\(x : A) -> pr2Tuple (P x) (Q x) (g x))
 
-LessOrEqual (n m : Nat) : U = (k : Nat) * (Path Nat (addRec n k) m)
-Less (n m : Nat) : U = (k : Nat) * (Path Nat (addRec n (succ k)) m)
+LessOrEqual (n m : N) : U = (k : N) * (Path N (addRec n k) m)
+Less (n m : N) : U = (k : N) * (Path N (addRec n (succ k)) m)
 
 indBasePath (A : U) (a : A) (C : (x : A) -> Path A a x -> U)
             (d : C a (<_> a)) (x : A) (p : Path A a x) : C x p =

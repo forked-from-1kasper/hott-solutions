@@ -44,27 +44,27 @@ indExistsFromPr
 
 -- exercise 1.4
 
-iter (C : U) (c0 : C) (cs : C -> C) : Nat -> C = split
+iter (C : U) (c0 : C) (cs : C -> C) : N -> C = split
   zero -> c0
   succ n -> cs (iter C c0 cs n)
 
-iterStep (C : U) (cs : Nat -> C -> C) (p : Sigma Nat C) : Sigma Nat C =
+iterStep (C : U) (cs : N -> C -> C) (p : Sigma N C) : Sigma N C =
   (succ p.1, cs p.1 p.2)
 
-recNatFromIter' (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) :
-                Sigma Nat C =
-  iter (Sigma Nat C) (zero, c0) (iterStep C cs) n
+recNatFromIter' (C : U) (c0 : C) (cs : N -> C -> C) (n : N) :
+                Sigma N C =
+  iter (Sigma N C) (zero, c0) (iterStep C cs) n
 
-recNatFromIter (C : U) (c0 : C) (cs : Nat -> C -> C) (n : Nat) : C =
+recNatFromIter (C : U) (c0 : C) (cs : N -> C -> C) (n : N) : C =
   (recNatFromIter' C c0 cs n).2
 
-double' : Nat -> Nat =
-  recNatFromIter Nat zero (\(n : Nat) (y : Nat) -> succ (succ y))
+double' : N -> N =
+  recNatFromIter N zero (\(n : N) (y : N) -> succ (succ y))
 
-recNatIterEq (C : U) (c0 : C) (cs : Nat -> C -> C) : (n : Nat) ->
-  Path (Sigma Nat C) (n, recNat C c0 cs n)
+recNatIterEq (C : U) (c0 : C) (cs : N -> C -> C) : (n : N) ->
+  Path (Sigma N C) (n, recNat C c0 cs n)
                      (recNatFromIter' C c0 cs n) = split
-  zero -> refl (Sigma Nat C) (zero, c0)
+  zero -> refl (Sigma N C) (zero, c0)
   succ n -> ?
 
 -- exercise 1.5
@@ -118,174 +118,174 @@ indTupleB (A B C : U) (C : TupleB A B -> U)
 
 -- exercise 1.8
 
-multRec : Nat -> Nat -> Nat =
-  recNat (Nat -> Nat) (\(_ : Nat) -> zero)
-         (\(n : Nat) (g : Nat -> Nat) (m : Nat) -> addRec m (g m))
+multRec : N -> N -> N =
+  recNat (N -> N) (\(_ : N) -> zero)
+         (\(n : N) (g : N -> N) (m : N) -> addRec m (g m))
 
-pownRecFlipped : Nat -> Nat -> Nat =
-  recNat (Nat -> Nat) (\(_ : Nat) -> (succ zero))
-         (\(n : Nat) (g : Nat -> Nat) (m : Nat) -> multRec m (g m))
+pownRecFlipped : N -> N -> N =
+  recNat (N -> N) (\(_ : N) -> (succ zero))
+         (\(n : N) (g : N -> N) (m : N) -> multRec m (g m))
 
-pownRec (n : Nat) (m : Nat) : Nat = pownRecFlipped m n
+pownRec (n : N) (m : N) : N = pownRecFlipped m n
 
 -- Yes, we have already defined add—addRec—through
 -- recursor of natural numbers,
 -- but proofs with it is so ugly and complicated,
 -- that I think, that add defined through
 -- pattern‐matching is 100 times better.
-add (m : Nat) : Nat -> Nat = split
+add (m : N) : N -> N = split
   zero -> m
   succ n -> succ (add m n)
 
 -- The same thing
-mult : Nat -> Nat -> Nat = split
-  zero -> const Nat Nat zero
-  succ n -> \(m : Nat) ->
+mult : N -> N -> N = split
+  zero -> const N N zero
+  succ n -> \(m : N) ->
     add m (mult n m)
 
-addZero : (a : Nat) -> Path Nat (add zero a) a = split
+addZero : (a : N) -> Path N (add zero a) a = split
   zero -> <_> zero
   succ a -> <i> succ (addZero a @ i)
 
-addSucc (a : Nat) : (b : Nat) ->
-        Path Nat (add (succ a) b) (succ (add a b)) = split
+addSucc (a : N) : (b : N) ->
+        Path N (add (succ a) b) (succ (add a b)) = split
   zero -> <_> succ a
   succ b -> <i> succ (addSucc a b @ i)
 
-addComm (a : Nat) : (b : Nat) -> Path Nat (add a b) (add b a) = split
+addComm (a : N) : (b : N) -> Path N (add a b) (add b a) = split
   zero -> <i> addZero a @ -i
-  succ b -> <i> comp (refl U Nat) (succ (addComm a b @ i))
-                     [ (i = 0) -> refl Nat (succ (add a b)),
+  succ b -> <i> comp (refl U N) (succ (addComm a b @ i))
+                     [ (i = 0) -> refl N (succ (add a b)),
                        (i = 1) -> <j> addSucc b a @ -j ]
 
-zeroIdentityNat : hasIdentity Nat add zero =
-  \(x : Nat) -> pair (addZero x) (refl Nat x)
+zeroIdentityNat : hasIdentity N add zero =
+  \(x : N) -> pair (addZero x) (refl N x)
 
-addA (a b : Nat) : (c : Nat) ->
-  Path Nat (add a (add b c)) (add (add a b) c) = split
+addA (a b : N) : (c : N) ->
+  Path N (add a (add b c)) (add (add a b) c) = split
   zero -> <_> add a b
   succ c -> <i> succ (addA a b c @ i)
 
-multRightZero : (a : Nat) -> Path Nat zero (mult a zero) = split
-  zero -> refl Nat zero
-  succ a -> <i> comp (refl U Nat) ((addZero (mult a zero)) @ -i)
+multRightZero : (a : N) -> Path N zero (mult a zero) = split
+  zero -> refl N zero
+  succ a -> <i> comp (refl U N) ((addZero (mult a zero)) @ -i)
                      [ (i = 0) -> <j> (multRightZero a) @ -j,
-		       (i = 1) -> refl Nat (add zero (mult a zero)) ]
+		       (i = 1) -> refl N (add zero (mult a zero)) ]
 
-moveSuccInAdd (a : Nat) : (b : Nat) ->
-  Path Nat (add (succ a) b) (succ (add a b)) = split
-  zero -> refl Nat (succ a)
+moveSuccInAdd (a : N) : (b : N) ->
+  Path N (add (succ a) b) (succ (add a b)) = split
+  zero -> refl N (succ a)
   succ b -> <i> succ (moveSuccInAdd a b @ i)
 
-multAOnSb : (a : Nat) -> (b : Nat) ->
-  Path Nat (mult a (succ b)) (add (mult a b) a) = split
-  zero -> \(b : Nat) -> refl Nat zero
-  succ a -> \(b : Nat) ->
-    <i> comp (refl U Nat) (moveSuccInAdd b (add (mult a b) a) @ i)
+multAOnSb : (a : N) -> (b : N) ->
+  Path N (mult a (succ b)) (add (mult a b) a) = split
+  zero -> \(b : N) -> refl N zero
+  succ a -> \(b : N) ->
+    <i> comp (refl U N) (moveSuccInAdd b (add (mult a b) a) @ i)
              [ (i = 0) -> <j> add (succ b) (multAOnSb a b @ -j),
                (i = 1) -> <j> succ (addA b (mult a b) a @ j) ]
 
-multDistribRightSwapped (b c : Nat) : (a : Nat) ->
-  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) = split
-  zero -> <i> comp (refl U Nat) (mult (addZero b @ i) c)
-                   [ (i = 0) -> refl Nat (mult (add zero b) c),
+multDistribRightSwapped (b c : N) : (a : N) ->
+  Path N (mult (add a b) c) (add (mult a c) (mult b c)) = split
+  zero -> <i> comp (refl U N) (mult (addZero b @ i) c)
+                   [ (i = 0) -> refl N (mult (add zero b) c),
                      (i = 1) -> <j> addZero (mult b c) @ -j ]
   succ a ->
-    <i> comp (refl U Nat) (add c (multDistribRightSwapped b c a @ i))
+    <i> comp (refl U N) (add c (multDistribRightSwapped b c a @ i))
         [ (i = 0) -> expandSuccInMult,
 	  (i = 1) -> addA c (mult a c) (mult b c) ]
     where
       hole0 :
-        Path Nat (add c (mult (add a b) c)) (mult (succ (add a b)) c) =
-        refl Nat (add c (mult (add a b) c))
+        Path N (add c (mult (add a b) c)) (mult (succ (add a b)) c) =
+        refl N (add c (mult (add a b) c))
 
       expandSuccInMult :
-        Path Nat (add c (mult (add a b) c)) (mult (add (succ a) b) c) =
-        <i> comp (refl U Nat) (hole0 @ i)
-                 [ (i = 0) -> refl Nat (add c (mult (add a b) c)),
+        Path N (add c (mult (add a b) c)) (mult (add (succ a) b) c) =
+        <i> comp (refl U N) (hole0 @ i)
+                 [ (i = 0) -> refl N (add c (mult (add a b) c)),
                    (i = 1) -> <j> mult (moveSuccInAdd a b @ -j) c ]
 
-multDistribRight (a b c : Nat) :
-  Path Nat (mult (add a b) c) (add (mult a c) (mult b c)) =
+multDistribRight (a b c : N) :
+  Path N (mult (add a b) c) (add (mult a c) (mult b c)) =
   multDistribRightSwapped b c a
 
-multComm (a : Nat) : (b : Nat) -> Path Nat (mult a b) (mult b a) = split
+multComm (a : N) : (b : N) -> Path N (mult a b) (mult b a) = split
   zero -> <i> multRightZero a @ -i
-  succ b -> <i> comp (refl U Nat) (multAOnSb a b @ i)
-                [ (i = 0) -> refl Nat (mult a (succ b)),
+  succ b -> <i> comp (refl U N) (multAOnSb a b @ i)
+                [ (i = 0) -> refl N (mult a (succ b)),
                   (i = 1) -> hole0 ]
     where
-      hole0 : Path Nat (add (mult a b) a) (add a (mult b a)) =
-        <i> comp (refl U Nat) (addComm (mult b a) a @ i)
+      hole0 : Path N (add (mult a b) a) (add a (mult b a)) =
+        <i> comp (refl U N) (addComm (mult b a) a @ i)
                  [ (i = 0) -> <j> add (multComm b a @ j) a,
-                   (i = 1) -> refl Nat (add a (mult b a))]
+                   (i = 1) -> refl N (add a (mult b a))]
 
-multDistribLeft (a b c : Nat) :
-  Path Nat (mult a (add b c)) (add (mult a b) (mult a c)) =
-  <i> comp (refl U Nat) (multDistribRight b c a @ i)
+multDistribLeft (a b c : N) :
+  Path N (mult a (add b c)) (add (mult a b) (mult a c)) =
+  <i> comp (refl U N) (multDistribRight b c a @ i)
       [ (i = 0) -> multComm (add b c) a,
         (i = 1) -> <j> add (multComm b a @ j) (multComm c a @ j) ]
 
-multIdentityRight (a : Nat) : Path Nat (mult a (succ zero)) a =
+multIdentityRight (a : N) : Path N (mult a (succ zero)) a =
   multComm a (succ zero)
 
-multAssoc (a b : Nat) : (c : Nat) ->
-  Path Nat (mult a (mult b c)) (mult (mult a b) c) = split
-  zero -> <i> comp (refl U Nat) (multRightZero a @ -i)
+multAssoc (a b : N) : (c : N) ->
+  Path N (mult a (mult b c)) (mult (mult a b) c) = split
+  zero -> <i> comp (refl U N) (multRightZero a @ -i)
               [ (i = 0) -> <j> mult a (multRightZero b @ j),
                 (i = 1) -> multRightZero (mult a b) ]
   succ c ->
-    <i> comp (refl U Nat) (add (multAssoc a b c @ i) (mult a b))
+    <i> comp (refl U N) (add (multAssoc a b c @ i) (mult a b))
              [ (i = 0) -> left,
                (i = 1) -> right ]
     where
-      right : Path Nat (add (mult (mult a b) c) (mult a b))
+      right : Path N (add (mult (mult a b) c) (mult a b))
                        (mult (mult a b) (succ c)) =
-        <i> comp (refl U Nat)
+        <i> comp (refl U N)
                  (multDistribLeft (mult a b) c (succ zero) @ -i)
             [ (i = 0) -> <j> add (mult (mult a b) c)
                                  (multIdentityRight (mult a b) @ j),
-              (i = 1) -> refl Nat (mult (mult a b)
+              (i = 1) -> refl N (mult (mult a b)
                                   (add c (succ zero)))]
-      hole0 : Path Nat (mult a (add (mult b c) (mult b (succ zero))))
+      hole0 : Path N (mult a (add (mult b c) (mult b (succ zero))))
                        (add (mult a (mult b c)) (mult a b)) =
-        <i> comp (refl U Nat) (multDistribLeft a (mult b c) b @ i)
+        <i> comp (refl U N) (multDistribLeft a (mult b c) b @ i)
             [ (i = 0) ->
                 <j> mult a (add (mult b c) (multIdentityRight b @ -j)),
-              (i = 1) -> refl Nat (add (mult a (mult b c)) (mult a b)) ]
-      left : Path Nat (add (mult a (mult b c)) (mult a b))
+              (i = 1) -> refl N (add (mult a (mult b c)) (mult a b)) ]
+      left : Path N (add (mult a (mult b c)) (mult a b))
                       (mult a (mult b (succ c))) =
-        <i> comp (refl U Nat)
+        <i> comp (refl U N)
                  (mult a (multDistribLeft b c (succ zero) @ -i))
             [ (i = 0) -> hole0,
-              (i = 1) -> refl Nat (mult a (mult b (succ c)))]
+              (i = 1) -> refl N (mult a (mult b (succ c)))]
 
-commutativeMonoidOverNatAdd : isCommutativeMonoid Nat =
+commutativeMonoidOverNatAdd : isCommutativeMonoid N =
   ((add, zero, addA, zeroIdentityNat), addComm)
 
-semigroupOverNatMul : isSemigroup Nat =
+semigroupOverNatMul : isSemigroup N =
   (mult, multAssoc)
 
-semiringOverNat : isSemiring Nat =
+semiringOverNat : isSemiring N =
   (commutativeMonoidOverNatAdd,
    semigroupOverNatMul,
    multDistribLeft,
    multDistribRight,
-   \(x : Nat) -> refl Nat zero,
-   \(x : Nat) -> multComm x zero)
+   \(x : N) -> refl N zero,
+   \(x : N) -> multComm x zero)
 
-natSemiring : Semiring = (Nat, semiringOverNat)
+natSemiring : Semiring = (N, semiringOverNat)
 
 -- exercise 1.9
 
-Fin : Nat -> U = undefined
+Fin : N -> U = undefined
 
 -- exercise 1.10
 
-ack : Nat -> Nat -> Nat =
-  recNat (Nat -> Nat) (\(n : Nat) -> succ n) -- wtf?
-    (\(_ : Nat) (g : Nat -> Nat) ->
-      recNat Nat (g (succ zero)) (\(_ : Nat) -> g))
+ack : N -> N -> N =
+  recNat (N -> N) (\(n : N) -> succ n) -- wtf?
+    (\(_ : N) (g : N -> N) ->
+      recNat N (g (succ zero)) (\(_ : N) -> g))
 
 -- exercise 1.11
 
@@ -322,4 +322,4 @@ uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
 
 -- exercise 1.16
 -- 1.8
--- addComm (a : Nat) : (b : Nat) -> Path Nat (add a b) (add b a)
+-- addComm (a : N) : (b : N) -> Path N (add a b) (add b a)
