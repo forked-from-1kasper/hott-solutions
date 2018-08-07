@@ -186,6 +186,27 @@ equivId (A : U) : Equiv A A =
       Path ((x : A) * Path A a x) (a, <i> a) p =
       <i> (p.2 @ i, <j> p.2 @ i /\ j)
 
+tuplePairEquiv (A B : U) (a c : A) (b d : B) :
+  EquivTrivial (Path (Tuple A B) (pair a b) (pair c d))
+               (Tuple (Path A a c) (Path B b d)) =
+  (lem1, pair (lem2, lem3) (lem2, lem4))
+  where
+    lem1 (p : Path (Tuple A B) (pair a b) (pair c d)) :
+      Tuple (Path A a c) (Path B b d) =
+      pair (<i> pr1Tuple A B (p @ i)) (<i> pr2Tuple A B (p @ i))
+    lem2 : Tuple (Path A a c) (Path B b d) ->
+           Path (Tuple A B) (pair a b) (pair c d) = split
+      pair p q -> <i> pair (p @ i) (q @ i)
+    lem3 : (x : Tuple (Path A a c) (Path B b d)) ->
+           Path (Tuple (Path A a c) (Path B b d))
+                (pair (<i> pr1Tuple A B (lem2 x @ i))
+                      (<i> pr2Tuple A B (lem2 x @ i))) x = split
+      pair p q -> refl (Tuple (Path A a c) (Path B b d)) (pair p q)
+    lem4 (x : Path (Tuple A B) (pair a b) (pair c d)) :
+         Path (Path (Tuple A B) (pair a b) (pair c d))
+              (<i> pair (pr1Tuple A B (x @ i))
+                        (pr2Tuple A B (x @ i))) x = undefined
+
 tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
         (Path B (pr2Tuple A B x) (pr2Tuple A B y)) =
@@ -240,11 +261,31 @@ happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   \(p : Path ((x : A) -> B x) f g) (x : A) ->
     <i> (p @ i) x
 
+funextTheorem (A : U) (B : A -> U) (f g : (x : A) -> B x) :
+  EquivTrivial (Path ((x : A) -> B x) f g)
+               ((x : A) -> Path (B x) (f x) (g x)) =
+  (lem1, pair (lem2, lem3) (lem2, lem4))
+  where
+    lem1 (p : Path ((x : A) -> B x) f g) :
+         ((x : A) -> Path (B x) (f x) (g x)) =
+      \(x : A) -> <i> (p @ i) x
+    lem2 (p : (x : A) -> Path (B x) (f x) (g x)) :
+         Path ((x : A) -> B x) f g =
+      <i> \(x : A) -> (p x) @ i
+    lem3 (p : (x : A) -> Path (B x) (f x) (g x)) :
+         Path ((x : A) -> Path (B x) (f x) (g x))
+              (\(x : A) -> <i> p x @ i) p =
+      <i> \(x : A) -> p x
+    lem4 (p : Path ((x : A) -> B x) f g) :
+         Path (Path ((x : A) -> B x) f g)
+              (<i> \(x : A) -> (p @ i) x) p =
+      refl (Path ((x : A) -> B x) f g) p
+
 funextAxiom (A : U) (B : A -> U) (f g : (x : A) -> B x) :
   isEquiv (Path ((x : A) -> B x) f g)
           ((x : A) -> (Path (B x) (f x) (g x)))
           (happly A B f g) =
-  undefined
+  (funextTheorem A B f g).2
 
 funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
   (h : (x : A) -> Path (B x) (f x) (g x)) :
