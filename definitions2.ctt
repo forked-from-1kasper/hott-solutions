@@ -335,12 +335,16 @@ r : (n : N) -> codeNat n n = split
   zero -> tt
   succ n -> r n
 
+encode (m n : N) (p : Path N m n) : codeNat m n =
+  trans N (codeNat m) m n p (r m)
+
+zeroIsNotSuccessor (m : N) : Path N (succ m) zero -> Empty =
+  encode (succ m) zero
+
 natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
-  (encode,
+  (encode m n,
    pair (decode m n, lem1) (decode m n, lem2))
   where
-    encode (p : Path N m n) : codeNat m n =
-      trans N (codeNat m) m n p (r m)
     decode : (m n : N) -> (p : codeNat m n) -> Path N m n = split
       zero -> split@((n : N) -> codeNat zero n -> Path N zero n) with
         zero -> \(p : Unit) -> refl N zero
@@ -351,7 +355,7 @@ natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
         succ n -> \(p : codeNat m n) -> <i> succ (decode m n p @ i)
     lem1 (p : codeNat m n) :
       Path (codeNat m n)
-           (comp (<i> codeNat m (decode m n p @ i)) (r m) []) p = ?
+           (transport (<i> codeNat m (decode m n p @ i)) (r m)) p = ?
     lem2 (p : Path N m n) :
       Path (Path N m n)
-           (decode m n (comp (<i> codeNat m (p @ i)) (r m) [])) p = ?
+           (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p = ?
