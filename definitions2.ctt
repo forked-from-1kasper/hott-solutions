@@ -123,11 +123,14 @@ ap (A B : U) (f : A -> B) (x y : A)
    (p : Path A x y) : Path B (f x) (f y) =
    <i> f (p @ i)
 
-trans (A : U) (P : A -> U) (x y : A) (p : Path A x y) : P x -> P y =
+transInd (A : U) (P : A -> U) (x y : A) (p : Path A x y) : P x -> P y =
   indPath A D d x y p
   where
     D (x y : A) (p : Path A x y) : U = P x -> P y
     d (x : A) : D x x (refl A x) = idfun (P x)
+
+trans (A : U) (P : A -> U) (x y : A) (p : Path A x y) (a : P x) : P y =
+  transport (<i> P (p @ i)) a
 
 homotopy (A : U) (P : A -> U) (f g : (x : A) -> P x) : U =
   (x : A) -> Path (P x) (f x) (g x)
@@ -319,3 +322,36 @@ tupleUnivProperty (A B X : U) :
       (\(x : X) -> pair (pr1Tuple A B (f x))
                         (pr2Tuple A B (f x))) f =
       <i> \(x : X) -> uniqTuple A B (f x) @ i
+
+codeNat : N -> N -> U = split
+  zero -> split@(N -> U) with
+    zero -> Unit
+    succ n -> Empty
+  succ m -> split@(N -> U) with
+    zero -> Empty
+    succ n -> codeNat m n
+
+r : (n : N) -> codeNat n n = split
+  zero -> tt
+  succ n -> r n
+
+natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
+  (encode,
+   pair (decode m n, lem1) (decode m n, lem2))
+  where
+    encode (p : Path N m n) : codeNat m n =
+      trans N (codeNat m) m n p (r m)
+    decode : (m n : N) -> (p : codeNat m n) -> Path N m n = split
+      zero -> split@((n : N) -> codeNat zero n -> Path N zero n) with
+        zero -> \(p : Unit) -> refl N zero
+        succ n -> recEmpty (Path N zero (succ n))
+      succ m -> split@((n : N) -> codeNat (succ m) n -> Path N (succ m) n) with
+        zero -> recEmpty (Path N (succ m) zero)
+        -- this is win
+        succ n -> \(p : codeNat m n) -> <i> succ (decode m n p @ i)
+    lem1 (p : codeNat m n) :
+      Path (codeNat m n)
+           (comp (<i> codeNat m (decode m n p @ i)) (r m) []) p = ?
+    lem2 (p : Path N m n) :
+      Path (Path N m n)
+           (decode m n (comp (<i> codeNat m (p @ i)) (r m) [])) p = ?
