@@ -11,8 +11,11 @@ data N = zero | succ (n : N)
 recTuple (A B C : U) (g : A -> B -> C) : Tuple A B -> C = split
   pair a b -> g a b
 
-pr1Tuple (A B : U) : Tuple A B -> A = recTuple A B A (\(a : A) (b : B) -> a)
-pr2Tuple (A B : U) : Tuple A B -> B = recTuple A B B (\(a : A) (b : B) -> b)
+pr1TupleRec (A B : U) : Tuple A B -> A = recTuple A B A (\(a : A) (b : B) -> a)
+pr2TupleRec (A B : U) : Tuple A B -> B = recTuple A B B (\(a : A) (b : B) -> b)
+
+pr1Tuple (A B : U) : Tuple A B -> A = split { pair a b -> a }
+pr2Tuple (A B : U) : Tuple A B -> B = split { pair a b -> b }
 
 uniqTuple (A B : U) : (x : Tuple A B) ->
          Path (Tuple A B) (pair (pr1Tuple A B x) (pr2Tuple A B x)) x = split

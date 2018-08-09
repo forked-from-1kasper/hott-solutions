@@ -154,10 +154,14 @@ qinv (A B : U) (f : A -> B) : U =
   (alpha : homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)) *
   (homotopy A (\(_ : A) -> A) (compose A B A g f) (idfun A))
 
+equivLeft (A B : U) (f : A -> B) : U =
+  ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
+
+equivRight (A B : U) (f : A -> B) : U =
+  ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
+
 isEquiv (A B : U) (f : A -> B) : U =
-  Tuple
-    ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
-    ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
+  Tuple (equivLeft A B f) (equivRight A B f)
 
 EquivTrivial (A B : U) : U = (f : A -> B) * (isEquiv A B f)
 
