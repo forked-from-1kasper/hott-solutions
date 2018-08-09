@@ -375,3 +375,22 @@ natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
           Path (Path N m n)
                (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p)
         lem2 m n p
+
+productEquiv (A B C : U) : EquivTrivial (A -> B -> C) (Tuple A B -> C) =
+  (uncurry,
+   pair (curry, lem2) (curry, lem3))
+  where
+    uncurry (f : A -> B -> C) : (Tuple A B -> C) = split
+      pair a b -> f a b
+    curry (f : Tuple A B -> C) : A -> B -> C =
+      \(a : A) (b : B) -> f (pair a b)
+    lem1 : (x : Tuple A B) -> (f : (Tuple A B) -> C) ->
+      Path C (uncurry (\(a : A) -> \(b : B) -> f (pair a b)) x) (f x) = split
+      pair a b -> \(f : Tuple A B -> C) -> refl C (f (pair a b))
+    lem2 (f : (Tuple A B) -> C) :
+      Path ((Tuple A B) -> C)
+           (uncurry (\(a : A) -> \(b : B) -> f (pair a b))) f =
+      <i> \(x : Tuple A B) -> (lem1 x) f @ i
+    lem3 (f : A -> B -> C) :
+      Path (A -> B -> C) (\(a : A) -> \(b : B) -> f a b) f =
+      <i> \(a : A) (b : B) -> f a b
