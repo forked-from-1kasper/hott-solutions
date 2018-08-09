@@ -355,11 +355,23 @@ succIsInj (m n : N) (p : Path N (succ m) (succ n)) : Path N m n =
 
 natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
   (encode m n,
-   pair (decode m n, lem1) (decode m n, lem2))
+   pair (decode m n, lem1 m n) (decode m n, lem3))
   where
-    lem1 (p : codeNat m n) :
+    type1 (m n : N) (p : codeNat m n) : U =
       Path (codeNat m n)
-           (transport (<i> codeNat m (decode m n p @ i)) (r m)) p = ?
-    lem2 (p : Path N m n) :
+           (transport (<i> codeNat m (decode m n p @ i)) (r m)) p
+    lem1 : (m n : N) -> (p : codeNat m n) -> type1 m n p = ?
+    lem2 : (x : N) ->
+      Path (Path N x x)
+           (decode x x (transport (<_> codeNat x x) (r x)))
+           (refl N x) = split
+      zero -> refl (Path N zero zero) (refl N zero)
+      succ x -> <i j> succ (lem2 x @ i @ j)
+    lem3 (p : Path N m n) :
       Path (Path N m n)
-           (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p = ?
+           (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p =
+      indPath N
+        (\(m n : N) (p : Path N m n) ->
+          Path (Path N m n)
+               (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p)
+        lem2 m n p
