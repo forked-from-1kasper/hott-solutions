@@ -36,7 +36,7 @@ Sigma (A B : U) : U = (_ : A) * B
 
 pr1Exists (A : U) (B : A -> U) (p : (x : A) * B x) : A = p.1
 
-pr2Exists (A : U) (B : A -> U) (p : (x : A) * B x) : B (pr1Exists A B p) = p.2
+pr2Exists (A : U) (B : A -> U) (p : (x : A) * B x) : B p.1 = p.2
 
 recExists (A C : U) (B : A -> U)
           (g : (x : A) -> B x -> C) (p : (x : A) * B x) : C =
