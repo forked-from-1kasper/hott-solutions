@@ -130,11 +130,13 @@ propEquivTruncatedProp (P : Prop) : Equiv P.1 (trunc P.1) =
      ((fromTrunc P p, truncInv P p),
       \(x : (x : P.1) * (Path (trunc P.1) p (elem x))) -> ?))
 
+propFromContr (A : U) (contr : isContr A) : isProp A =
+  \(x y : A) -> <i> comp (refl U A) contr.1
+                         [ (i = 0) -> contr.2 x,
+                           (i = 1) -> contr.2 y ]
+
 contrImpliesProp (A : U) (contr : isContr A) : Tuple A (isProp A) =
-  pair contr.1 (\(x y : A) ->
-    <i> comp (refl U A) contr.1
-      [ (i = 0) -> contr.2 x,
-        (i = 1) -> contr.2 y ])
+  pair contr.1 (propFromContr A contr)
 
 contrImplesEquivToUnit (A : U) (contr : isContr A) : EquivTrivial A Unit =
   (\(a : A) -> tt,

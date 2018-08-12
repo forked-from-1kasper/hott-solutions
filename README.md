@@ -1,6 +1,8 @@
+# Description
+
 My HoTT book (Homotopy Type Theory) solutions written in [cubicaltt](https://github.com/mortberg/cubicaltt).
 
-# Structure
+## Structure
 
 * basic.ctt — basic definitions (Path, refl etc).
 * definitions1.ctt — chapter 1 definitions.
