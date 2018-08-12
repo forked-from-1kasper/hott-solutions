@@ -1,0 +1,11 @@
+module hott3 where
+import definitions3
+
+-- exercise 3.1
+setFromEquiv (A B : U) (set : isSet A) (equiv : Equiv A B) : isSet B =
+  transport (<i> t (r @ i)) set
+  where
+    r : Path U A B =
+      <i> Glue B [ (i = 0) -> (A, equiv), (i = 1) -> (B, equivId B) ]
+    t (X : U) : U =
+      (x y : X) -> (p q : Path X x y) -> Path (Path X x y) p q
