@@ -34,7 +34,7 @@ Prop : U = (P : U) * (isProp P)
 
 propEquivUnit (P : Prop) (x : P.1) : BiinvEquiv P.1 Unit =
   (\(x : P.1) -> tt,
-   pair (\(y : Unit) -> x, unitIsContr tt)
+   pair (\(y : Unit) -> x, unitIsProp tt)
         (\(y : Unit) -> x, P.2 x))
 
 propBiinvEquiv (P Q : Prop)
@@ -140,7 +140,7 @@ contrImpliesProp (A : U) (contr : isContr A) : Tuple A (isProp A) =
 
 contrImplesEquivToUnit (A : U) (contr : isContr A) : BiinvEquiv A Unit =
   (\(a : A) -> tt,
-   pair (\(x : Unit) -> contr.1, unitIsContr tt)
+   pair (\(x : Unit) -> contr.1, unitIsProp tt)
         (\(x : Unit) -> contr.1, contr.2))
 
 isContrFamily (A : U) (P : A -> U) (contr : (x : A) -> isContr (P x)) :
