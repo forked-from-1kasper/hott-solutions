@@ -32,13 +32,13 @@ negationOfLawOfExcludedMiddle (A : U) : not (Coproduct A (not A)) = split
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
 
-propEquivUnit (P : Prop) (x : P.1) : EquivTrivial P.1 Unit =
+propEquivUnit (P : Prop) (x : P.1) : BiinvEquiv P.1 Unit =
   (\(x : P.1) -> tt,
    pair (\(y : Unit) -> x, unitIsContr tt)
         (\(y : Unit) -> x, P.2 x))
 
-propEquivTrivial (P Q : Prop)
-  (f : P.1 -> Q.1) (g : Q.1 -> P.1) : EquivTrivial P.1 Q.1 =
+propBiinvEquiv (P Q : Prop)
+  (f : P.1 -> Q.1) (g : Q.1 -> P.1) : BiinvEquiv P.1 Q.1 =
   (f, pair (g, \(x : Q.1) -> Q.2 (f (g x)) x)
            (g, \(y : P.1) -> P.2 (g (f y)) y))
 
@@ -118,7 +118,7 @@ truncIsSet (P : U) : isSet (trunc P) =
 truncInv (P : Prop) : (p : trunc P.1) ->
   Path (trunc P.1) p (elem (fromTrunc P p)) = undefined
 
-propEquivTrivialTruncProp (P : Prop) : EquivTrivial P.1 (trunc P.1) =
+propBiinvEquivTruncProp (P : Prop) : BiinvEquiv P.1 (trunc P.1) =
   (\(p : P.1) -> elem p,
    pair (fromTrunc P,
           \(p : trunc P.1) -> <i> truncInv P p @ -i)
@@ -138,7 +138,7 @@ propFromContr (A : U) (contr : isContr A) : isProp A =
 contrImpliesProp (A : U) (contr : isContr A) : Tuple A (isProp A) =
   pair contr.1 (propFromContr A contr)
 
-contrImplesEquivToUnit (A : U) (contr : isContr A) : EquivTrivial A Unit =
+contrImplesEquivToUnit (A : U) (contr : isContr A) : BiinvEquiv A Unit =
   (\(a : A) -> tt,
    pair (\(x : Unit) -> contr.1, unitIsContr tt)
         (\(x : Unit) -> contr.1, contr.2))

@@ -3,7 +3,7 @@ import definitions2
 
 -- exercise 2.6
 equivFunc (A : U) (x y z : A) (p : Path A x y) :
-  isEquiv (Path A y z) (Path A x z) (compPath A x y z p) =
+  biinv (Path A y z) (Path A x z) (compPath A x y z p) =
   pair
     (pAndResultToQ, \(q : Path A x z) -> ?)
     (pAndResultToQ, \(q : Path A y z) -> ?)
@@ -13,7 +13,7 @@ equivFunc (A : U) (x y z : A) (p : Path A x y) :
 
 -- exercise 2.9
 coproductUnivProp (A B X : U) :
-  EquivTrivial (Coproduct A B -> X) (Tuple (A -> X) (B -> X)) =
+  BiinvEquiv (Coproduct A B -> X) (Tuple (A -> X) (B -> X)) =
   (func,
    pair (revFunc, lem1)
         (revFunc, lem3))
@@ -43,9 +43,9 @@ coproductUnivProp (A B X : U) :
 
 -- exercise 2.17
 equivTuple (A A' B B' : U)
-  (equivA : EquivTrivial A A')
-  (equivB : EquivTrivial B B') :
-  EquivTrivial (Tuple A B) (Tuple A' B') =
+  (equivA : BiinvEquiv A A')
+  (equivB : BiinvEquiv B B') :
+  BiinvEquiv (Tuple A B) (Tuple A' B') =
   (lem1, pair (lem2, lem3) (lem2, ?))
   where
     lem1 : Tuple A B -> Tuple A' B' = split
@@ -54,10 +54,10 @@ equivTuple (A A' B B' : U)
       pair a' b' ->
         let
           f : A' -> A =
-            (pr1Tuple (equivLeft A A' equivA.1)
-                      (equivRight A A' equivA.1) equivA.2).1
+            (pr1Tuple (linv A A' equivA.1)
+                      (rinv A A' equivA.1) equivA.2).1
           g : B' -> B =
-            (pr1Tuple (equivLeft B B' equivB.1)
-                      (equivRight B B' equivB.1) equivB.2).1 in
+            (pr1Tuple (linv B B' equivB.1)
+                      (rinv B B' equivB.1) equivB.2).1 in
         pair (f a') (g b')
     lem3 : (x : Tuple A' B') -> Path (Tuple A' B') (lem1 (lem2 x)) x = undefined

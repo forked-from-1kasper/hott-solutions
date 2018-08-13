@@ -154,18 +154,17 @@ qinv (A B : U) (f : A -> B) : U =
   (alpha : homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)) *
   (homotopy A (\(_ : A) -> A) (compose A B A g f) (idfun A))
 
-equivLeft (A B : U) (f : A -> B) : U =
+linv (A B : U) (f : A -> B) : U =
   ((g : B -> A) * (homotopy B (\(_ : B) -> B) (compose B A B f g) (idfun B)))
 
-equivRight (A B : U) (f : A -> B) : U =
+rinv (A B : U) (f : A -> B) : U =
   ((h : B -> A) * (homotopy A (\(_ : A) -> A) (compose A B A h f) (idfun A)))
 
-isEquiv (A B : U) (f : A -> B) : U =
-  Tuple (equivLeft A B f) (equivRight A B f)
+biinv (A B : U) (f : A -> B) : U = Tuple (linv A B f) (rinv A B f)
 
-EquivTrivial (A B : U) : U = (f : A -> B) * (isEquiv A B f)
+BiinvEquiv (A B : U) : U = (f : A -> B) * (biinv A B f)
 
-uaEquivTrivial (A B : U) : EquivTrivial A B -> Path U A B = undefined
+uaBiinvEquiv (A B : U) : BiinvEquiv A B -> Path U A B = undefined
 
 -- 4.2.4, with reversed path, as in equiv.ctt
 fiber (A B : U) (f : A -> B) (y : B) : U =
@@ -178,12 +177,67 @@ isContrFiber (A B : U) (f : A -> B) : U =
 -- this is also equiv
 Equiv (A B : U) : U = (f : A -> B) * (isContrFiber A B f)
 
+-- from equiv.ctt
+Square (A : U) (a0 a1 b0 b1 : A)
+               (u : Path A a0 a1) (v : Path A b0 b1)
+               (r0 : Path A a0 b0) (r1 : Path A a1 b1) : U
+  = PathP (<i> (PathP (<j> A) (u @ i) (v @ i))) r0 r1
+
+lemIso (A B : U) (f : A -> B) (g : B -> A)
+       (s : (y : B) -> Path B (f (g y)) y)
+       (t : (x : A) -> Path A (g (f x)) x)
+       (y : B) (x0 x1 : A) (p0 : Path B y (f x0)) (p1 : Path B y (f x1)) :
+       Path (fiber A B f y) (x0, p0) (x1, p1) =
+  <i> (p @ i, sq1 @ i)
+  where
+    rem0 : Path A (g y) x0 =
+      <i> comp (refl U A) (g (p0 @ i)) [ (i = 1) -> t x0, (i = 0) -> <k> g y ]
+
+    rem0fill : Square A (g y) (g (f x0)) (g y) x0
+                        (<i> g (p0 @ i)) rem0 (<i> g y) (t x0) =
+      <i> fill (refl U A) (g (p0 @ i)) [ (i = 1) -> t x0, (i = 0) -> <k> g y ]
+
+    rem1 : Path A (g y) x1 =
+      <i> comp (refl U A) (g (p1 @ i)) [ (i = 1) -> t x1, (i = 0) -> <k> g y ]
+
+    rem1fill : Square A (g y) (g (f x1)) (g y) x1
+                        (<i> g (p1 @ i)) rem1 (<i> g y) (t x1) =
+      <i> fill (refl U A) (g (p1 @ i)) [ (i = 1) -> t x1, (i = 0) -> <k> g y ]
+
+    p : Path A x0 x1 =
+      <i> comp (refl U A) (g y) [ (i = 1) -> rem1, (i = 0) -> rem0 ]
+
+    pfill : Square A (g y) (g y) x0 x1
+                     (refl A (g y)) p rem0 rem1 =
+      <i> fill (refl U A) (g y) [ (i = 1) -> rem1, (i = 0) -> rem0 ]
+
+    sq : Square A (g y) (g y) (g (f x0)) (g (f x1))
+                  (refl A (g y)) (<i> g (f (p @ i)))
+                  (<j> g (p0 @ j)) (<j> g (p1 @ j)) =
+      <i j> comp (refl U A) (pfill @ i @ j) [ (i = 0) -> <k> rem0fill @ j @ -k,
+                                              (i = 1) -> <k> rem1fill @ j @ -k,
+                                              (j = 0) -> <k> g y,
+                                              (j = 1) -> <k> t (p @ i) @ -k ]
+
+    sq1 : Square B y y (f x0) (f x1)
+                       (refl B y) (<i> f (p @ i)) p0 p1 =
+      <i j> comp (refl U B) (f (sq @ i @ j)) [ (i = 0) -> s (p0 @ j),
+                                               (i = 1) -> s (p1 @ j),
+                                               (j = 1) -> s (f (p @ i)),
+                                               (j = 0) -> s y ]
+
+qinvToEquiv (A B : U) (f : A -> B) (e : qinv A B f) : Equiv A B =
+  let
+    g : B -> A = e.1 in
+  (f, \(y : B) ->
+    ((g y, <i> e.2.1 y @ -i), \(z : fiber A B f y) ->
+     lemIso A B f g e.2.1 e.2.2 y (g y) z.1 (<i> e.2.1 y @ -i) z.2))
+
 invPath (A : U) (x y : A) (p : Path A x y) : Path A y x =
   <i> p @ -i
 
-equivTrivialId (A : U) : EquivTrivial A A =
-  (idfun A,
-   pair (idfun A, refl A) (idfun A, refl A))
+BiinvEquivId (A : U) : BiinvEquiv A A =
+  (idfun A, pair (idfun A, refl A) (idfun A, refl A))
 
 equivId (A : U) : Equiv A A =
   (idfun A, \(a : A) ->
@@ -194,8 +248,8 @@ equivId (A : U) : Equiv A A =
       <i> (p.2 @ i, <j> p.2 @ i /\ j)
 
 tuplePairEquiv (A B : U) (a c : A) (b d : B) :
-  EquivTrivial (Path (Tuple A B) (pair a b) (pair c d))
-               (Tuple (Path A a c) (Path B b d)) =
+  BiinvEquiv (Path (Tuple A B) (pair a b) (pair c d))
+             (Tuple (Path A a c) (Path B b d)) =
   (lem1, pair (lem2, lem3) (lem2, lem4))
   where
     lem1 (p : Path (Tuple A B) (pair a b) (pair c d)) :
@@ -220,15 +274,15 @@ tupleMap (A B : U) (x y : Tuple A B) (p : Path (Tuple A B) x y) :
   pair (<i> pr1Tuple A B (p @ i)) (<i> pr2Tuple A B (p @ i))
 
 tupleMapIsEquiv (A B : U) (x y : Tuple A B) :
-  isEquiv (Path (Tuple A B) x y)
-          (Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
-                 (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
-          (tupleMap A B x y) = undefined
+  biinv (Path (Tuple A B) x y)
+        (Tuple (Path A (pr1Tuple A B x) (pr1Tuple A B y))
+               (Path B (pr2Tuple A B x) (pr2Tuple A B y)))
+        (tupleMap A B x y) = undefined
 
 unitIsContr (x : Unit) : (y : Unit) -> Path Unit x y = split
   tt -> uniqUnit x
 
-unitEquivTrivial (x y : Unit) : EquivTrivial (Path Unit x y) Unit =
+unitBiinvEquiv (x y : Unit) : BiinvEquiv (Path Unit x y) Unit =
   (\(p : Path Unit x y) -> tt,
    pair (backFunc x y, unitIsContr tt)
         (backFunc x y, hole))
@@ -244,7 +298,7 @@ unitEquivTrivial (x y : Unit) : EquivTrivial (Path Unit x y) Unit =
           (refl (Path Unit tt tt) (refl Unit tt)) z) x y p
 
 unitPathUnitPath (x y : Unit) : Path U (Path Unit x y) Unit =
-  uaEquivTrivial (Path Unit x y) Unit (unitEquivTrivial x y)
+  uaBiinvEquiv (Path Unit x y) Unit (unitBiinvEquiv x y)
 
 onlyReflInPathUnit (x : Unit) (p : Path Unit x x) :
   Path (Path Unit x x) (refl Unit x) p = undefined
@@ -269,8 +323,8 @@ happly (A : U) (B : A -> U) (f g : (x : A) -> B x) :
     <i> (p @ i) x
 
 funextTheorem (A : U) (B : A -> U) (f g : (x : A) -> B x) :
-  EquivTrivial (Path ((x : A) -> B x) f g)
-               ((x : A) -> Path (B x) (f x) (g x)) =
+  BiinvEquiv (Path ((x : A) -> B x) f g)
+             ((x : A) -> Path (B x) (f x) (g x)) =
   (lem1, pair (lem2, lem3) (lem2, lem4))
   where
     lem1 (p : Path ((x : A) -> B x) f g) :
@@ -289,9 +343,9 @@ funextTheorem (A : U) (B : A -> U) (f g : (x : A) -> B x) :
       refl (Path ((x : A) -> B x) f g) p
 
 funextAxiom (A : U) (B : A -> U) (f g : (x : A) -> B x) :
-  isEquiv (Path ((x : A) -> B x) f g)
-          ((x : A) -> (Path (B x) (f x) (g x)))
-          (happly A B f g) =
+  biinv (Path ((x : A) -> B x) f g)
+        ((x : A) -> (Path (B x) (f x) (g x)))
+        (happly A B f g) =
   (funextTheorem A B f g).2
 
 funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
@@ -308,7 +362,7 @@ funEq (A B : U) (f : A -> B) : Path (A -> B) (\(x : A) -> f x) f =
   <i> \(x : A) -> f x
 
 tupleUnivProperty (A B X : U) :
-  EquivTrivial (X -> Tuple A B) (Tuple (X -> A) (X -> B)) =
+  BiinvEquiv (X -> Tuple A B) (Tuple (X -> A) (X -> B)) =
   (func,
    pair (backFunc, lem1)
         (backFunc, lem2))
@@ -357,7 +411,7 @@ zeroIsNotSuccessor (m : N) : Path N (succ m) zero -> Empty =
 succIsInj (m n : N) (p : Path N (succ m) (succ n)) : Path N m n =
   decode m n (encode (succ m) (succ n) p)
 
-natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
+natPathEquiv (m n : N) : BiinvEquiv (Path N m n) (codeNat m n) =
   (encode m n,
    pair (decode m n, lem1 m n) (decode m n, lem3))
   where
@@ -380,7 +434,7 @@ natPathEquiv (m n : N) : EquivTrivial (Path N m n) (codeNat m n) =
                (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p)
         lem2 m n p
 
-productEquiv (A B C : U) : EquivTrivial (A -> B -> C) (Tuple A B -> C) =
+productEquiv (A B C : U) : BiinvEquiv (A -> B -> C) (Tuple A B -> C) =
   (uncurry,
    pair (curry, lem2) (curry, lem3))
   where
