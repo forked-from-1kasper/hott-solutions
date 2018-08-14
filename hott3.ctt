@@ -10,3 +10,21 @@ setFromEquiv (A B : U) (set : isSet A) (equiv : Equiv A B) : isSet B =
 idContrImpliesProp (A : U) (contr : isContr (A -> A)) : isProp A =
   \(x y : A) -> <i>
     (propFromContr (A -> A) contr (\(_ : A) -> x) (\(_ : A) -> y) @ i) x
+
+-- exercise 3.9
+propEquivBool (h : LEM) : BiinvEquiv Prop Bool =
+  (lem2,
+   pair (lem3, lem4) (lem3, lem5))
+  where
+    lem1 (A : U) : Coproduct A (not A) -> Bool = split
+      inl a -> true
+      inr b -> false
+    lem2 (p : Prop) : Bool = lem1 p.1 (h p)
+    lem3 : Bool -> Prop = split
+      false -> (Empty, \(x : Empty) ->
+        recEmpty ((y : Empty) -> Path Empty x y) x)
+      true -> (Unit, unitIsProp)
+    lem4 : (x : Bool) -> Path Bool (lem2 (lem3 x)) x = split
+      false -> ?
+      true -> ?
+    lem5 (p : Prop) : Path Prop (lem3 (lem2 p)) p = ?

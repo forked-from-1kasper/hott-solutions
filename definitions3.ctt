@@ -60,9 +60,9 @@ isSetIsProp (P : U) : isProp (isSet P) =
     <i> \(x y : P) (p q : Path P x y) ->
       setIsType1 (P, f) x y p q (f x y p q) (g x y p q) @ i
 
-LEM : U = (A : Prop) -> Sigma A.1 (not A.1)
+LEM : U = (A : Prop) -> Coproduct A.1 (not A.1)
 lawOfDoubleNegation : U = (A : Prop) -> (not (not A.1) -> A.1)
-higherLEM : U = (A : U) -> Sigma A (not A)
+higherLEM : U = (A : U) -> Coproduct A (not A)
 
 isDecidable (A : U) : U = Sigma A (not A)
 isDecidableFamily (A : U) (B : A -> U) : U = (a : A) -> Sigma (B a) (not (B a))
