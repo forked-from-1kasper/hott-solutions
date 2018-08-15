@@ -142,3 +142,5 @@ indPath (A : U) (C : (x y : A) -> Path A x y -> U)
   \(x y : A) (p : Path A x y) -> indBasePath A x (C x) (c x) y p
 
 Neq (A : U) (x y : A) : U = not (Path A x y)
+neqSymm (A : U) (x y : A) (p : Neq A x y) : Neq A y x =
+  \(g : Path A y x) -> p (<i> g @ -i)

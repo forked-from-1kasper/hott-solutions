@@ -256,6 +256,9 @@ biinvEquivToQinv (A B : U) (e : BiinvEquiv A B) : qinv A B e.1 =
         (beta x) in
   (g, (alpha, beta'))
 
+equivFromBiinvEquiv (A B : U) (e : BiinvEquiv A B) : Equiv A B =
+  qinvToEquiv A B e.1 (biinvEquivToQinv A B e)
+
 invPath (A : U) (x y : A) (p : Path A x y) : Path A y x =
   <i> p @ -i
 
@@ -435,7 +438,7 @@ zeroIsNotSuccessor (m : N) : Path N (succ m) zero -> Empty =
 succIsInj (m n : N) (p : Path N (succ m) (succ n)) : Path N m n =
   decode m n (encode (succ m) (succ n) p)
 
-natPathEquiv (m n : N) : BiinvEquiv (Path N m n) (codeNat m n) =
+natPathBiinvEquiv (m n : N) : BiinvEquiv (Path N m n) (codeNat m n) =
   (encode m n,
    pair (decode m n, lem1 m n) (decode m n, lem3))
   where
@@ -457,6 +460,10 @@ natPathEquiv (m n : N) : BiinvEquiv (Path N m n) (codeNat m n) =
           Path (Path N m n)
                (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p)
         lem2 m n p
+
+natPathEquiv (m n : N) : Equiv (Path N m n) (codeNat m n) =
+  qinvToEquiv (Path N m n) (codeNat m n) (encode m n)
+    (biinvEquivToQinv (Path N m n) (codeNat m n) (natPathBiinvEquiv m n))
 
 productEquiv (A B C : U) : BiinvEquiv (A -> B -> C) (Tuple A B -> C) =
   (uncurry,

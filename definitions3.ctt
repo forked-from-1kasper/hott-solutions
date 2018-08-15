@@ -6,11 +6,11 @@ isSet (A : U) : U = (x y : A) ->
   (p q : Path A x y) -> Path (Path A x y) p q
 Set : U = (A : U) * (isSet A)
 
-unitTypeIsSet : isSet Unit =
+unitIsSet : isSet Unit =
   \(x y : Unit) (p q : Path Unit x y) ->
     unitPathUniq x y p q
 
-emptyTypeIsSet : isSet Empty =
+emptyIsSet : isSet Empty =
   \(x y : Empty) (p q : Path Empty x y) ->
     recEmpty (Path (Path Empty x y) p q) x
 
@@ -20,6 +20,32 @@ Type1 (A : U) : U =
     Path (Path (Path A x y) p q) r s
 
 setIsType1 (A : Set) : Type1 A.1 = undefined
+
+boolToU : Bool -> U = split
+  false -> Empty
+  true -> Unit
+
+trueNeqFalse : not (Path Bool true false) =
+  indBasePath Bool true
+    (\(x : Bool) (_ : Path Bool true x) -> boolToU x) tt false
+
+falseNeqTrue : not (Path Bool false true) =
+  neqSymm Bool true false trueNeqFalse
+
+universeNotSet : not (isSet U) =
+  \(h : isSet U) -> falseNeqTrue (falseEqTrue (h Bool Bool p (refl U Bool)))
+  where
+    f : Bool -> Bool = split
+      false -> true
+      true -> false
+    fAp : (x : Bool) -> Path Bool (f (f x)) x = split
+      false -> refl Bool false
+      true -> refl Bool true
+    b : BiinvEquiv Bool Bool = (f, pair (f, fAp) (f, fAp))
+    e : Equiv Bool Bool = equivFromBiinvEquiv Bool Bool b
+    p : Path U Bool Bool = pathFromEquiv Bool Bool e
+    falseEqTrue (error : Path (Path U Bool Bool) p (refl U Bool)) :
+      Path Bool false true = <i> transport (error @ i) true
 
 negationOfDoubleNegation (A : U) : not (not (not A) -> A) =
   undefined
