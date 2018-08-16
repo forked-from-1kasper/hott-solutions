@@ -483,3 +483,24 @@ productEquiv (A B C : U) : BiinvEquiv (A -> B -> C) (Tuple A B -> C) =
     lem3 (f : A -> B -> C) :
       Path (A -> B -> C) (\(a : A) -> \(b : B) -> f a b) f =
       <i> \(a : A) (b : B) -> f a b
+
+depProductEquiv (X : U) (A B : X -> U) :
+  BiinvEquiv ((x : X) -> Tuple (A x) (B x))
+             (Tuple ((x : X) -> A x) ((x : X) -> B x)) =
+  (lem1, pair (lem2, lem3) (lem2, lem4))
+  where
+    lem1 (f : (x : X) -> Tuple (A x) (B x)) :
+         Tuple ((x : X) -> A x) ((x : X) -> B x) =
+      pair (\(x : X) -> pr1Tuple (A x) (B x) (f x))
+           (\(x : X) -> pr2Tuple (A x) (B x) (f x))
+    lem2 : (Tuple ((x : X) -> A x) ((x : X) -> B x)) ->
+           ((x : X) -> Tuple (A x) (B x)) = split
+      pair f g -> \(x : X) -> pair (f x) (g x)
+    lem3 : (h : Tuple ((x : X) -> A x) ((x : X) -> B x)) ->
+      Path (Tuple ((x : X) -> A x) ((x : X) -> B x))
+           (lem1 (lem2 h)) h = split
+      pair f g -> <_> pair (\(x : X) -> f x) (\(x : X) -> g x)
+    lem4 (f : (x : X) -> Tuple (A x) (B x)) :
+      Path ((x : X) -> Tuple (A x) (B x))
+           (lem2 (lem1 f)) f =
+      <i> \(x : X) -> uniqTuple (A x) (B x) (f x) @ i

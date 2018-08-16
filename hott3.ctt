@@ -27,3 +27,7 @@ propEquivBool (h : LEM) : BiinvEquiv Prop Bool =
       false -> ?
       true -> ?
     lem5 (p : Prop) : Path Prop (lem3 (lem2 p)) p = ?
+
+-- exercise 3.11
+cannotConstructFromTrunc (A : U) : not (trunc A -> A) =
+  \(f : trunc A -> A) -> ?
