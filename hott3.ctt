@@ -3,7 +3,7 @@ import definitions3
 
 -- exercise 3.1
 setFromEquiv (A B : U) (set : isSet A) (equiv : Equiv A B) : isSet B =
-  transport (<i> isSet (pathFromEquiv A B equiv @ i)) set
+  transport (<i> isSet (ua A B equiv @ i)) set
 
 -- exercise 3.4
 idContrImpliesProp (A : U) (contr : isContr (A -> A)) : isProp A =

@@ -43,7 +43,7 @@ universeNotSet : not (isSet U) =
       true -> refl Bool true
     b : BiinvEquiv Bool Bool = (f, pair (f, fAp) (f, fAp))
     e : Equiv Bool Bool = equivFromBiinvEquiv Bool Bool b
-    p : Path U Bool Bool = pathFromEquiv Bool Bool e
+    p : Path U Bool Bool = ua Bool Bool e
     falseEqTrue (error : Path (Path U Bool Bool) p (refl U Bool)) :
       Path Bool false true = <i> transport (error @ i) true
 

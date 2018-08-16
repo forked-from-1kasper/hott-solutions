@@ -323,11 +323,11 @@ unitBiinvEquiv (x y : Unit) : BiinvEquiv (Path Unit x y) Unit =
           Path (Path Unit z z) (backFunc z z tt) (refl Unit z))
           (refl (Path Unit tt tt) (refl Unit tt)) z) x y p
 
-pathFromEquiv (A B : U) (e : Equiv A B) : Path U A B =
+ua (A B : U) (e : Equiv A B) : Path U A B =
   <i> Glue B [ (i = 0) -> (A, e), (i = 1) -> (B, equivId B) ]
 
 uaBiinvEquiv (A B : U) (e : BiinvEquiv A B) : Path U A B =
-  pathFromEquiv A B (qinvToEquiv A B e.1 (biinvEquivToQinv A B e))
+  ua A B (qinvToEquiv A B e.1 (biinvEquivToQinv A B e))
 
 pathUnitToUnit (x y : Unit) : Path U (Path Unit x y) Unit =
   uaBiinvEquiv (Path Unit x y) Unit (unitBiinvEquiv x y)
@@ -385,7 +385,8 @@ funext (A : U) (B : A -> U) (f g : (x : A) -> B x)
 idtoeqv (A B : U) (p : Path U A B) : Equiv A B =
   transport (<i> Equiv A (p @ i)) (equivId A)
 
-ua (A B : U) : isContrFiber (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
+uaEquiv (A B : U) :
+  isContrFiber (Path U A B) (Equiv A B) (idtoeqv A B) = undefined
 
 funEq (A B : U) (f : A -> B) : Path (A -> B) (\(x : A) -> f x) f =
   <i> \(x : A) -> f x
