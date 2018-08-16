@@ -465,26 +465,7 @@ natPathEquiv (m n : N) : Equiv (Path N m n) (codeNat m n) =
   qinvToEquiv (Path N m n) (codeNat m n) (encode m n)
     (biinvEquivToQinv (Path N m n) (codeNat m n) (natPathBiinvEquiv m n))
 
-productEquiv (A B C : U) : BiinvEquiv (A -> B -> C) (Tuple A B -> C) =
-  (uncurry,
-   pair (curry, lem2) (curry, lem3))
-  where
-    uncurry (f : A -> B -> C) : (Tuple A B -> C) = split
-      pair a b -> f a b
-    curry (f : Tuple A B -> C) : A -> B -> C =
-      \(a : A) (b : B) -> f (pair a b)
-    lem1 : (x : Tuple A B) -> (f : (Tuple A B) -> C) ->
-      Path C (uncurry (\(a : A) -> \(b : B) -> f (pair a b)) x) (f x) = split
-      pair a b -> \(f : Tuple A B -> C) -> refl C (f (pair a b))
-    lem2 (f : (Tuple A B) -> C) :
-      Path ((Tuple A B) -> C)
-           (uncurry (\(a : A) -> \(b : B) -> f (pair a b))) f =
-      <i> \(x : Tuple A B) -> (lem1 x) f @ i
-    lem3 (f : A -> B -> C) :
-      Path (A -> B -> C) (\(a : A) -> \(b : B) -> f a b) f =
-      <i> \(a : A) (b : B) -> f a b
-
-depProductEquiv (X : U) (A B : X -> U) :
+pairDepUnivProp (X : U) (A B : X -> U) :
   BiinvEquiv ((x : X) -> Tuple (A x) (B x))
              (Tuple ((x : X) -> A x) ((x : X) -> B x)) =
   (lem1, pair (lem2, lem3) (lem2, lem4))
@@ -504,3 +485,42 @@ depProductEquiv (X : U) (A B : X -> U) :
       Path ((x : X) -> Tuple (A x) (B x))
            (lem2 (lem1 f)) f =
       <i> \(x : X) -> uniqTuple (A x) (B x) (f x) @ i
+
+productEquiv (A B C : U) : BiinvEquiv (A -> B -> C) (Tuple A B -> C) =
+  (uncurry,
+   pair (curry, lem2) (curry, lem3))
+  where
+    uncurry (f : A -> B -> C) : (Tuple A B -> C) = split
+      pair a b -> f a b
+    curry (f : Tuple A B -> C) : A -> B -> C =
+      \(a : A) (b : B) -> f (pair a b)
+    lem1 : (x : Tuple A B) -> (f : (Tuple A B) -> C) ->
+      Path C (uncurry (\(a : A) -> \(b : B) -> f (pair a b)) x) (f x) = split
+      pair a b -> \(f : Tuple A B -> C) -> refl C (f (pair a b))
+    lem2 (f : (Tuple A B) -> C) :
+      Path ((Tuple A B) -> C)
+           (uncurry (\(a : A) -> \(b : B) -> f (pair a b))) f =
+      <i> \(x : Tuple A B) -> (lem1 x) f @ i
+    lem3 (f : A -> B -> C) :
+      Path (A -> B -> C) (\(a : A) -> \(b : B) -> f a b) f =
+      <i> \(a : A) (b : B) -> f a b
+
+depProductEquiv (A B : U) (C : Tuple A B -> U) :
+  BiinvEquiv ((w : Tuple A B) -> C w) ((x : A) -> (y : B) -> C (pair x y)) =
+  (lem1, pair (lem2, lem3) (lem2, lem5))
+  where
+    lem1 (f : (w : Tuple A B) -> C w) : ((x : A) -> (y : B) -> C (pair x y)) =
+      \(x : A) (y : B) -> f (pair x y)
+    lem2 (f : (x : A) -> (y : B) -> C (pair x y)) :
+      (w : Tuple A B) -> C w = split
+      pair a b -> f a b
+    lem3 (f : (x : A) -> (y : B) -> C (pair x y)) :
+      Path ((x : A) (y : B) -> C (pair x y)) (lem1 (lem2 f)) f =
+      <_> \(x : A) (y : B) -> f x y
+    lem4 : (w : Tuple A B) -> (f : (w : Tuple A B) -> C w) ->
+      Path (C w) (lem2 (lem1 f) w) (f w) = split
+      pair a b -> \(f : (w : Tuple A B) -> C w) ->
+        refl (C (pair a b)) (f (pair a b))
+    lem5 (f : (w : Tuple A B) -> C w) :
+      Path ((w : Tuple A B) -> C w) (lem2 (lem1 f)) f =
+      <i> \(w : Tuple A B) -> lem4 w f @ i
