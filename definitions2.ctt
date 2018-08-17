@@ -409,6 +409,51 @@ tupleUnivProperty (A B X : U) :
                         (pr2Tuple A B (f x))) f =
       <i> \(x : X) -> uniqTuple A B (f x) @ i
 
+codeCoproduct (A B : U) (a0 : A) : Coproduct A B -> U = split
+  inl a -> Path A a0 a
+  inr b -> Empty
+
+encodeCoproduct (A B : U) (a0 : A) (x : Coproduct A B)
+  (p : Path (Coproduct A B) (inl a0) x) : codeCoproduct A B a0 x =
+  transport (<i> codeCoproduct A B a0 (p @ i)) (refl A a0)
+
+decodeCoproduct (A B : U) (a0 : A) : (x : Coproduct A B) ->
+  (c : codeCoproduct A B a0 x) -> Path (Coproduct A B) (inl a0) x = split
+  inl a -> \(c : Path A a0 a) -> <i> inl (c @ i)
+  inr b -> recEmpty (Path (Coproduct A B) (inl a0) (inr b))
+
+--indBasePath (A : U) (a : A) (C : (x : A) -> Path A a x -> U)
+--            (d : C a (<_> a)) (x : A) (p : Path A a x) : C x p
+
+coproductPathBiinvEquiv (A B : U) (a0 : A) (x : Coproduct A B) :
+  BiinvEquiv (Path (Coproduct A B) (inl a0) x) (codeCoproduct A B a0 x) =
+  (encodeCoproduct A B a0 x,
+   pair (decodeCoproduct A B a0 x, lem1 x) (decodeCoproduct A B a0 x, lem2))
+  where
+    lem1 : (x : Coproduct A B) -> (h : codeCoproduct A B a0 x) ->
+      Path (codeCoproduct A B a0 x)
+           (encodeCoproduct A B a0 x
+             (decodeCoproduct A B a0 x h)) h = split
+      inl a -> ?
+      inr b -> \(e : Empty) -> recEmpty
+        (Path Empty
+          (transport
+            (<i> codeCoproduct A B a0
+              (recEmpty (Path (Coproduct A B) (inl a0) (inr b)) e @ i))
+            (refl A a0))
+          e) e
+    lem2 (p : Path (Coproduct A B) (inl a0) x) :
+      Path (Path (Coproduct A B) (inl a0) x)
+           (decodeCoproduct A B a0 x  
+             (encodeCoproduct A B a0 x p)) p =
+      indBasePath (Coproduct A B) (inl a0)
+        (\(x : Coproduct A B) (p : Path (Coproduct A B) (inl a0) x) ->
+          Path (Path (Coproduct A B) (inl a0) x)
+           (decodeCoproduct A B a0 x
+             (encodeCoproduct A B a0 x p)) p)
+        ?
+        x p
+
 codeNat : N -> N -> U = split
   zero -> split@(N -> U) with
     zero -> Unit
