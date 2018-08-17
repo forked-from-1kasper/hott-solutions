@@ -421,49 +421,49 @@ r : (n : N) -> codeNat n n = split
   zero -> tt
   succ n -> r n
 
-encode (m n : N) (p : Path N m n) : codeNat m n =
+encodeNat (m n : N) (p : Path N m n) : codeNat m n =
   trans N (codeNat m) m n p (r m)
 
-decode : (m n : N) -> (p : codeNat m n) -> Path N m n = split
+decodeNat : (m n : N) -> (p : codeNat m n) -> Path N m n = split
   zero -> split@((n : N) -> codeNat zero n -> Path N zero n) with
     zero -> \(p : Unit) -> refl N zero
     succ n -> recEmpty (Path N zero (succ n))
   succ m -> split@((n : N) -> codeNat (succ m) n -> Path N (succ m) n) with
     zero -> recEmpty (Path N (succ m) zero)
     -- this is win
-    succ n -> \(p : codeNat m n) -> <i> succ (decode m n p @ i)
+    succ n -> \(p : codeNat m n) -> <i> succ (decodeNat m n p @ i)
 
 zeroIsNotSuccessor (m : N) : Path N (succ m) zero -> Empty =
-  encode (succ m) zero
+  encodeNat (succ m) zero
 
 succIsInj (m n : N) (p : Path N (succ m) (succ n)) : Path N m n =
-  decode m n (encode (succ m) (succ n) p)
+  decodeNat m n (encodeNat (succ m) (succ n) p)
 
 natPathBiinvEquiv (m n : N) : BiinvEquiv (Path N m n) (codeNat m n) =
-  (encode m n,
-   pair (decode m n, lem1 m n) (decode m n, lem3))
+  (encodeNat m n,
+   pair (decodeNat m n, lem1 m n) (decodeNat m n, lem3))
   where
     type1 (m n : N) (p : codeNat m n) : U =
       Path (codeNat m n)
-           (transport (<i> codeNat m (decode m n p @ i)) (r m)) p
+           (transport (<i> codeNat m (decodeNat m n p @ i)) (r m)) p
     lem1 : (m n : N) -> (p : codeNat m n) -> type1 m n p = ?
     lem2 : (x : N) ->
       Path (Path N x x)
-           (decode x x (transport (<_> codeNat x x) (r x)))
+           (decodeNat x x (transport (<_> codeNat x x) (r x)))
            (refl N x) = split
       zero -> refl (Path N zero zero) (refl N zero)
       succ x -> <i j> succ (lem2 x @ i @ j)
     lem3 (p : Path N m n) :
       Path (Path N m n)
-           (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p =
+           (decodeNat m n (transport (<i> codeNat m (p @ i)) (r m))) p =
       indPath N
         (\(m n : N) (p : Path N m n) ->
           Path (Path N m n)
-               (decode m n (transport (<i> codeNat m (p @ i)) (r m))) p)
+               (decodeNat m n (transport (<i> codeNat m (p @ i)) (r m))) p)
         lem2 m n p
 
 natPathEquiv (m n : N) : Equiv (Path N m n) (codeNat m n) =
-  qinvToEquiv (Path N m n) (codeNat m n) (encode m n)
+  qinvToEquiv (Path N m n) (codeNat m n) (encodeNat m n)
     (biinvEquivToQinv (Path N m n) (codeNat m n) (natPathBiinvEquiv m n))
 
 pairDepUnivProp (X : U) (A B : X -> U) :
