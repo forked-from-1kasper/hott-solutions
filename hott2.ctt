@@ -41,6 +41,18 @@ coproductUnivProp (A B X : U) :
                    (\(b : B) -> f (inr b))) f =
       <i> \(x : Coproduct A B) -> lem2 f x @ i
 
+-- exercise 2.16
+funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
+  (funext : homotopy A B f g -> Path ((x : A) -> B x) f g) :
+  BiinvEquiv (Path ((x : A) -> B x) f g)
+             ((x : A) -> Path (B x) (f x) (g x)) =
+  (lem1, pair (funext, lem2) (funext, ?))
+  where
+    lem1 (p : Path ((x : A) -> B x) f g) (x : A) : Path (B x) (f x) (g x) =
+      <i> (p @ i) x
+    lem2 (p : (x : A) -> Path (B x) (f x) (g x)) :
+      Path ((x : A) -> Path (B x) (f x) (g x)) (lem1 (funext p)) p = ?
+
 -- exercise 2.17
 equivTuple (A A' B B' : U)
   (equivA : BiinvEquiv A A')
