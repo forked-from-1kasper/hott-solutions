@@ -123,6 +123,16 @@ ap (A B : U) (f : A -> B) (x y : A)
    (p : Path A x y) : Path B (f x) (f y) =
    <i> f (p @ i)
 
+apSymm (A B : U) (f : A -> B) (x y : A) (p : Path A x y) :
+  Path (Path B (f y) (f x))
+       (ap A B f y x (<i> p @ -i))
+       (<i> ap A B f x y p @ -i) =
+  refl (Path B (f y) (f x)) (<i> f (p @ -i))
+
+apId (A : U) (x y : A) (p : Path A x y) :
+  Path (Path A x y) (ap A A (idfun A) x y p) p =
+  refl (Path A x y) p
+
 transInd (A : U) (P : A -> U) (x y : A) (p : Path A x y) : P x -> P y =
   indPath A D d x y p
   where
@@ -148,6 +158,18 @@ homotopyTrans (A : U) (P : A -> U) (f g h : (x : A) -> P x)
   \(x : A) -> <i> comp (refl U (P x)) (g x)
     [ (i = 0) -> <j> (h1 x) @ -j,
       (i = 1) -> h2 x ]
+
+homotopyComm (A B : U) (f g : A -> B) (H : homotopy A (\(x : A) -> B) f g)
+  (x y : A) (p : Path A x y) :
+    Path (Path B (f x) (g y))
+         (compPath B (f x) (g x) (g y) (H x) (<i> g (p @ i)))
+         (compPath B (f x) (f y) (g y) (<i> f (p @ i)) (H y)) =
+  indPath A
+    (\(x y : A) (p : Path A x y) ->
+      Path (Path B (f x) (g y))
+        (compPath B (f x) (g x) (g y) (H x) (<i> g (p @ i)))
+        (compPath B (f x) (f y) (g y) (<i> f (p @ i)) (H y)))
+    (\(z : A) -> ?) x y p
 
 qinv (A B : U) (f : A -> B) : U =
   (g : B -> A) *
@@ -422,9 +444,6 @@ decodeCoproduct (A B : U) (a0 : A) : (x : Coproduct A B) ->
   inl a -> \(c : Path A a0 a) -> <i> inl (c @ i)
   inr b -> recEmpty (Path (Coproduct A B) (inl a0) (inr b))
 
---indBasePath (A : U) (a : A) (C : (x : A) -> Path A a x -> U)
---            (d : C a (<_> a)) (x : A) (p : Path A a x) : C x p
-
 coproductPathBiinvEquiv (A B : U) (a0 : A) (x : Coproduct A B) :
   BiinvEquiv (Path (Coproduct A B) (inl a0) x) (codeCoproduct A B a0 x) =
   (encodeCoproduct A B a0 x,
@@ -434,7 +453,8 @@ coproductPathBiinvEquiv (A B : U) (a0 : A) (x : Coproduct A B) :
       Path (codeCoproduct A B a0 x)
            (encodeCoproduct A B a0 x
              (decodeCoproduct A B a0 x h)) h = split
-      inl a -> ?
+      inl a -> \(h : Path A a0 a) ->
+        ?
       inr b -> \(e : Empty) -> recEmpty
         (Path Empty
           (transport

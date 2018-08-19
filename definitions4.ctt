@@ -1,0 +1,9 @@
+module definitions4 where
+import hott3
+
+ishae (A B : U) (f : A -> B) : U =
+  (g : B -> A) *
+  (nu : homotopy A (\(x : A) -> A) (\(x : A) -> g (f x)) (idfun A)) *
+  (eps : homotopy B (\(y : B) -> B) (\(y : B) -> f (g y)) (idfun B)) *
+  (x : A) *
+  (Path (Path B (f (g (f x))) (f x)) (<i> f (nu x @ i)) (eps (f x)))
