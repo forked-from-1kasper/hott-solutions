@@ -8,6 +8,7 @@ My HoTT book (Homotopy Type Theory) solutions written in [cubicaltt](https://git
 * definitions1.ctt — chapter 1 definitions.
 * definitions2.ctt — chapter 2 definitions.
 * definitions3.ctt — chapter 3 definitions.
+* definitions4.ctt — chapter 4 definitions.
 * hott1.ctt — chapter 1 solutions.
 * hott2.ctt — chapter 2 solutions.
 * hott3.ctt — chapter 3 solutions.
