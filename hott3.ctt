@@ -10,6 +10,27 @@ idContrImpliesProp (A : U) (contr : isContr (A -> A)) : isProp A =
   \(x y : A) -> <i>
     (propFromContr (A -> A) contr (\(_ : A) -> x) (\(_ : A) -> y) @ i) x
 
+propImpliesIdContr (A : U) (p : isProp A) : isContr (A -> A) =
+  (idfun A, \(f : A -> A) -> <i> \(x : A) -> p x (f x) @ i)
+
+-- weak iff
+iff (A B : U) : U = Tuple (A -> B) (B -> A)
+
+idContrIffProp (A : U) : iff (isContr (A -> A)) (isProp A) =
+  pair (idContrImpliesProp A) (propImpliesIdContr A)
+
+-- exercise 3.6
+propImpliesCoproductProp (A : U) (p : isProp A) :
+  isProp (Coproduct A (not A)) = split
+  inl x -> split@((y : Coproduct A (A -> Empty)) ->
+                  Path (Coproduct A (A -> Empty)) (inl x) y) with
+    inl y -> <i> inl (p x y @ i)
+    inr y -> recEmpty (Path (Coproduct A (A -> Empty)) (inl x) (inr y)) (y x)
+  inr x -> split@((y : Coproduct A (A -> Empty)) ->
+                  Path (Coproduct A (A -> Empty)) (inr x) y) with
+    inl y -> recEmpty (Path (Coproduct A (A -> Empty)) (inr x) (inl y)) (x y)
+    inr y -> <i> inr (\(a : A) -> recEmpty (Path Empty (x a) (y a)) (x a) @ i)
+
 -- exercise 3.9
 propEquivBool (h : LEM) : BiinvEquiv Prop Bool =
   (lem2,
