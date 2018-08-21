@@ -15,6 +15,9 @@ propImpliesIdContr (A : U) (p : isProp A) : isContr (A -> A) =
 
 -- weak iff
 iff (A B : U) : U = Tuple (A -> B) (B -> A)
+-- proof, that this is analogues for not-Prop
+iffFromFuncs (A B : Prop) (f : A.1 -> B.1) (g : B.1 -> A.1) : Iff A.1 B.1 =
+  ua A.1 B.1 (equivFromBiinvEquiv A.1 B.1 (propBiinvEquiv A B f g))
 
 idContrIffProp (A : U) : iff (isContr (A -> A)) (isProp A) =
   pair (idContrImpliesProp A) (propImpliesIdContr A)

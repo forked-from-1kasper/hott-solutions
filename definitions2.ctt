@@ -27,16 +27,16 @@ compPathInd (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
 compPath (A : U) (x y z : A) (p : Path A x y) (q : Path A y z) :
   Path A x z =
   <i> comp (refl U A) (p @ i)
-      [ (i = 0) -> refl A x,
-        (i = 1) -> q ]
+           [ (i = 0) -> refl A x,
+             (i = 1) -> q ]
 
 reflComposition (A : U) (x : A) :
   Path (Path A x x) (compPath A x x x (refl A x) (refl A x))
        (refl A x) =
   <k j> comp (refl U A) (refl A x @ k /\ j)
-          [ (j = 0) -> refl A x,
-            (j = 1) -> refl A x,
-            (k = 1) -> <i> refl A x @ k /\ i ]
+             [ (j = 0) -> refl A x,
+               (j = 1) -> refl A x,
+               (k = 1) -> <i> refl A x @ k /\ i ]
 
 ru (A : U) (x y : A) (p : Path A x y) :
   Path (Path A x y) p (compPath A x y y p (refl A y)) =
@@ -156,8 +156,8 @@ homotopyInverse (A : U) (P : A -> U)
 homotopyTrans (A : U) (P : A -> U) (f g h : (x : A) -> P x)
   (h1 : homotopy A P f g) (h2 : homotopy A P g h) : homotopy A P f h =
   \(x : A) -> <i> comp (refl U (P x)) (g x)
-    [ (i = 0) -> <j> (h1 x) @ -j,
-      (i = 1) -> h2 x ]
+                       [ (i = 0) -> <j> (h1 x) @ -j,
+                         (i = 1) -> h2 x ]
 
 homotopyComm (A B : U) (f g : A -> B) (H : homotopy A (\(x : A) -> B) f g)
   (x y : A) (p : Path A x y) :
