@@ -41,6 +41,25 @@ coproductUnivProp (A B X : U) :
                    (\(b : B) -> f (inr b))) f =
       <i> \(x : Coproduct A B) -> lem2 f x @ i
 
+-- exercise 2.13
+boolEquivBoolTrue : BiinvEquiv Bool Bool =
+  (idfun Bool,
+   pair (idfun Bool, refl Bool)
+        (idfun Bool, refl Bool))
+
+notBool : Bool -> Bool = split
+  false -> true
+  true -> false
+
+notReverse : (x : Bool) -> Path Bool (notBool (notBool x)) x = split
+  false -> refl Bool false
+  true -> refl Bool true
+
+boolEquivBoolFalse : BiinvEquiv Bool Bool =
+  (notBool,
+   pair (notBool, notReverse)
+        (notBool, notReverse))
+
 -- exercise 2.16
 funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
   (funext : homotopy A B f g -> Path ((x : A) -> B x) f g) :
