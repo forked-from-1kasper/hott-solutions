@@ -60,6 +60,20 @@ boolEquivBoolFalse : BiinvEquiv Bool Bool =
    pair (notBool, notReverse)
         (notBool, notReverse))
 
+boolEquivEquivBool : BiinvEquiv (BiinvEquiv Bool Bool) Bool =
+  (lem1, pair (lem2, lem3) (lem2, lem4))
+  where
+    lem1 (e : BiinvEquiv Bool Bool) : Bool =
+      e.1 true
+    lem2 : Bool -> BiinvEquiv Bool Bool = split
+      false -> boolEquivBoolFalse
+      true -> boolEquivBoolTrue
+    lem3 : (x : Bool) -> Path Bool (lem1 (lem2 x)) x = split
+      false -> refl Bool false
+      true -> refl Bool true
+    lem4 (x : BiinvEquiv Bool Bool) :
+      Path (BiinvEquiv Bool Bool) (lem2 (lem1 x)) x = ?
+
 -- exercise 2.16
 funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
   (funext : homotopy A B f g -> Path ((x : A) -> B x) f g) :
