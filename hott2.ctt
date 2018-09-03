@@ -43,9 +43,7 @@ coproductUnivProp (A B X : U) :
 
 -- exercise 2.13
 boolEquivBoolTrue : BiinvEquiv Bool Bool =
-  (idfun Bool,
-   pair (idfun Bool, refl Bool)
-        (idfun Bool, refl Bool))
+  (idfun Bool, pair (idfun Bool, refl Bool) (idfun Bool, refl Bool))
 
 notBool : Bool -> Bool = split
   false -> true
@@ -56,9 +54,24 @@ notReverse : (x : Bool) -> Path Bool (notBool (notBool x)) x = split
   true -> refl Bool true
 
 boolEquivBoolFalse : BiinvEquiv Bool Bool =
-  (notBool,
-   pair (notBool, notReverse)
-        (notBool, notReverse))
+  (notBool, pair (notBool, notReverse) (notBool, notReverse))
+
+boolEquivBoolIsBin (e : BiinvEquiv Bool Bool) :
+  Coproduct (Path (BiinvEquiv Bool Bool) boolEquivBoolTrue e)
+            (Path (BiinvEquiv Bool Bool) boolEquivBoolFalse e) =
+  ?
+
+recBoolEquivBool (P : BiinvEquiv Bool Bool -> U)
+  (left : P boolEquivBoolTrue)
+  (right : P boolEquivBoolFalse)
+  (e : BiinvEquiv Bool Bool) : P e =
+  lem1 (boolEquivBoolIsBin e)
+  where
+    lem1 : Coproduct (Path (BiinvEquiv Bool Bool) boolEquivBoolTrue e)
+                     (Path (BiinvEquiv Bool Bool) boolEquivBoolFalse e) ->
+           P e = split
+      inl a -> transport (<i> P (a @ i)) left
+      inr b -> transport (<i> P (b @ i)) right
 
 boolEquivEquivBool : BiinvEquiv (BiinvEquiv Bool Bool) Bool =
   (lem1, pair (lem2, lem3) (lem2, lem4))
@@ -72,7 +85,12 @@ boolEquivEquivBool : BiinvEquiv (BiinvEquiv Bool Bool) Bool =
       false -> refl Bool false
       true -> refl Bool true
     lem4 (x : BiinvEquiv Bool Bool) :
-      Path (BiinvEquiv Bool Bool) (lem2 (lem1 x)) x = ?
+      Path (BiinvEquiv Bool Bool) (lem2 (lem1 x)) x =
+      recBoolEquivBool
+        (Path (BiinvEquiv Bool Bool) (lem2 (lem1 x)))
+        ?
+        ?
+        x
 
 -- exercise 2.16
 funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
