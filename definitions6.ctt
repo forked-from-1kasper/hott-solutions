@@ -81,3 +81,8 @@ data Pushout (A B C : U) (f : C -> A) (g : C -> B) =
   | gluePushout (c : C) <i>
                 [ (i = 0) -> inl (f c),
                   (i = 1) -> inr (g c) ]
+
+isEquivRel (A : U) (R : A -> A -> U) : U =
+  (refl : (a : A) -> R a a) *
+  (symm : (a b : A) -> R a b -> R b a) *
+  ((a b c : A) -> Tuple (R a b) (R b c) -> R a c)
