@@ -48,7 +48,4 @@ circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
 
     onlyRefl (A : U) (x : A) (p : Path A x x)
              (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
-             Path (Path A x x) p (refl A x) =
-      <i> comp (refl U (Path A x x)) (bottom A x p h @ i)
-               [ (i = 0) -> refl (Path A x x) p,
-                 (i = 1) -> refl (Path A x x) (refl A x) ]
+             Path (Path A x x) p (refl A x) = bottom A x p h
