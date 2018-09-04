@@ -49,3 +49,28 @@ circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
     onlyRefl (A : U) (x : A) (p : Path A x x)
              (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
              Path (Path A x x) p (refl A x) = bottom A x p h
+
+data Suspension (A : U) =
+    north
+  | souce
+  | merid (a : A) <i>
+      [ (i = 0) -> north, (i = 1) -> souce ]
+
+SN : N -> U = split
+  zero -> Bool
+  succ n -> Suspension (SN n)
+
+SuspensionOfEmptyEquivBool : BiinvEquiv (Suspension Empty) Bool =
+  (f, pair (g, lem1) (g, lem2))
+  where
+    f : Suspension Empty -> Bool = split
+      north -> false
+      souce -> true
+      merid e @ i -> recEmpty (Path Bool false true) e @ i
+    g : Bool -> Suspension Empty = split
+      false -> north
+      true -> souce
+    lem1 : (x : Bool) -> Path Bool (f (g x)) x = split
+      false -> refl Bool false
+      true -> refl Bool true
+    lem2 : (x : Suspension Empty) -> Path (Suspension Empty) (g (f x)) x = ?
