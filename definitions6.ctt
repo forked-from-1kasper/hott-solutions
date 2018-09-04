@@ -1,0 +1,25 @@
+module definitions6 where
+import hott5
+
+data S1 =
+    base
+  | loop <i> [ (i = 0) -> base, (i = 1) -> base ]
+
+data I =
+    left
+  | right
+  | seg <i> [ (i = 0) -> left, (i = 1) -> right ]
+
+recI (B : U) (b0 : B) (b1 : B) (s : Path B b0 b1) : I -> B = split
+  left -> b0
+  right -> b1
+  seg @ i -> s @ i
+
+funextFromI (A B : U) (f g : A -> B) (p : (x : A) -> Path B (f x) (g x)) :
+  Path (A -> B) f g = <i> q (seg{I} @ i)
+  where
+    lem1 (x : A) : I -> B = split
+      left -> f x
+      right -> g x
+      seg @ i -> p x @ i
+    q (i : I) : A -> B = \(x : A) -> lem1 x i
