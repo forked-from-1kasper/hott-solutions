@@ -54,7 +54,7 @@ data Suspension (A : U) =
     north
   | souce
   | merid (a : A) <i>
-      [ (i = 0) -> north, (i = 1) -> souce ]
+          [ (i = 0) -> north, (i = 1) -> souce ]
 
 SN : N -> U = split
   zero -> Bool
@@ -74,3 +74,10 @@ SuspensionOfEmptyEquivBool : BiinvEquiv (Suspension Empty) Bool =
       false -> refl Bool false
       true -> refl Bool true
     lem2 : (x : Suspension Empty) -> Path (Suspension Empty) (g (f x)) x = ?
+
+data Pushout (A B C : U) (f : C -> A) (g : C -> B) =
+    inl (a : A)
+  | inr (b : B)
+  | gluePushout (c : C) <i>
+                [ (i = 0) -> inl (f c),
+                  (i = 1) -> inr (g c) ]
