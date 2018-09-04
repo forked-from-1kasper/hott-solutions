@@ -1,0 +1,22 @@
+module hott5 where
+import definitions5
+
+-- exercise 5.11
+
+data Lost (A : U) =
+  cons (head : A) (tail : Lost A)
+
+ones : Lost N = cons (succ zero) ones
+
+lostImpliesEmpty (A : U) : Lost A -> Empty = split
+  cons head tail -> lostImpliesEmpty A tail
+
+streamCalculusIsHalfLie (A : U) : BiinvEquiv (Lost A) Empty =
+  (lostImpliesEmpty A,
+   pair (recEmpty (Lost A),
+          \(x : Empty) ->
+            recEmpty (Path Empty (lostImpliesEmpty A (recEmpty (Lost A) x)) x) x)
+        (recEmpty (Lost A),
+          \(x : Lost A) ->
+            recEmpty (Path (Lost A) (recEmpty (Lost A) (lostImpliesEmpty A x)) x)
+                     (lostImpliesEmpty A x)))
