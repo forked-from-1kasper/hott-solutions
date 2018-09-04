@@ -1,2 +1,30 @@
 module definitions5 where
 import hott4
+
+data List (A : U) =
+    nil
+  | cons (head : A) (tail : List A)
+
+data N2 =
+    zero2
+  | succ2 (n : N2)
+
+recNat2 (C : U) (c0 : C) (cs : N2 -> C -> C) : N2 -> C = split
+  zero2 -> c0
+  succ2 n -> cs n (recNat2 C c0 cs n)
+
+f : N -> N2 = recNat N2 zero2 (\(n : N) (m : N2) -> succ2 m)
+g : N2 -> N = recNat2 N zero (\(n : N2) (m : N) -> succ m)
+double2 (n : N2) : N2 = f (double (g n))
+
+equivNtoN2 : BiinvEquiv N N2 =
+  (f, pair (g, lem1) (g, lem2))
+  where
+    lem1 : (n : N2) -> Path N2 (f (g n)) n = split
+      zero2 -> refl N2 zero2
+      succ2 n -> <i> succ2 (lem1 n @ i)
+    lem2 : (n : N) -> Path N (g (f n)) n = split
+      zero -> refl N zero
+      succ n -> <i> succ (lem2 n @ i)
+
+pathNtoN2 : Path U N N2 = uaBiinvEquiv N N2 equivNtoN2
