@@ -38,17 +38,10 @@ circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
     f (A : U) (x : A) (p : Path A x x) : S1 -> A = split
       base -> x
       loop @ i -> p @ i
-
-    bottom (A : U) (x : A) (p : Path A x x)
-           (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
-      Path (Path A x x)
-           (<i> f A x p (loop{S1} @ i))
-           (<i> f A x p (refl S1 base @ i)) =
-        <i j> f A x p (h @ i @ j)
-
     onlyRefl (A : U) (x : A) (p : Path A x x)
              (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
-             Path (Path A x x) p (refl A x) = bottom A x p h
+             Path (Path A x x) p (refl A x) =
+        <i j> f A x p (h @ i @ j)
 
 data Suspension (A : U) =
     north
