@@ -138,7 +138,7 @@ indBasePath (A : U) (a : A) (C : (x : A) -> Path A a x -> U)
 
 indPath (A : U) (C : (x y : A) -> Path A x y -> U)
         (c : (x : A) -> C x x (refl A x)) :
-	(x y : A) -> (p : Path A x y) -> C x y p =
+        (x y : A) -> (p : Path A x y) -> C x y p =
   \(x y : A) (p : Path A x y) -> indBasePath A x (C x) (c x) y p
 
 Neq (A : U) (x y : A) : U = not (Path A x y)

@@ -4,6 +4,7 @@ import hott5
 data S1 =
     base
   | loop <i> [ (i = 0) -> base, (i = 1) -> base ]
+loopS1 : Path S1 base base = <i> loop{S1} @ i
 
 data I =
     left
@@ -23,3 +24,31 @@ funextFromI (A B : U) (f g : A -> B) (p : (x : A) -> Path B (f x) (g x)) :
       right -> g x
       seg @ i -> p x @ i
     q (i : I) : A -> B = \(x : A) -> lem1 x i
+
+circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
+  \(h : Path (Path S1 base base) loopS1 (refl S1 base)) ->
+    universeNotSet (\(A B : U) (p q : Path U A B) ->
+      indPath U
+        (\(A B : U) (p : Path U A B) -> (q : Path U A B) ->
+          Path (Path U A B) p q)
+        (\(A : U) (p : Path U A A) ->
+          <i> onlyRefl U A p h @ -i)
+        A B p q)
+  where
+    f (A : U) (x : A) (p : Path A x x) : S1 -> A = split
+      base -> x
+      loop @ i -> p @ i
+
+    bottom (A : U) (x : A) (p : Path A x x)
+           (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
+      Path (Path A x x)
+           (<i> f A x p (loop{S1} @ i))
+           (<i> f A x p (refl S1 base @ i)) =
+        <i j> f A x p (h @ i @ j)
+
+    onlyRefl (A : U) (x : A) (p : Path A x x)
+             (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
+             Path (Path A x x) p (refl A x) =
+      <i> comp (refl U (Path A x x)) (bottom A x p h @ i)
+               [ (i = 0) -> refl (Path A x x) p,
+                 (i = 1) -> refl (Path A x x) (refl A x) ]
