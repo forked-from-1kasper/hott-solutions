@@ -19,21 +19,22 @@ recI (B : U) (b0 : B) (b1 : B) (s : Path B b0 b1) : I -> B = split
 funextFromI (A B : U) (f g : A -> B) (p : (x : A) -> Path B (f x) (g x)) :
   Path (A -> B) f g = <i> q (seg{I} @ i)
   where
-    lem1 (x : A) : I -> B = split
+    path (x : A) : I -> B = split
       left -> f x
       right -> g x
       seg @ i -> p x @ i
-    q (i : I) : A -> B = \(x : A) -> lem1 x i
+    q (i : I) : A -> B = \(x : A) -> path x i
 
 circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
   \(h : Path (Path S1 base base) loopS1 (refl S1 base)) ->
-    universeNotSet (\(A B : U) (p q : Path U A B) ->
-      indPath U
-        (\(A B : U) (p : Path U A B) -> (q : Path U A B) ->
-          Path (Path U A B) p q)
-        (\(A : U) (p : Path U A A) ->
-          <i> onlyRefl U A p h @ -i)
-        A B p q)
+    universeNotSet
+      (\(A B : U) (p q : Path U A B) ->
+        indPath U
+          (\(A B : U) (p : Path U A B) ->
+            (q : Path U A B) -> Path (Path U A B) p q)
+          (\(A : U) (p : Path U A A) ->
+            <i> onlyRefl U A p h @ -i)
+          A B p q)
   where
     f (A : U) (x : A) (p : Path A x x) : S1 -> A = split
       base -> x
@@ -41,7 +42,7 @@ circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
     onlyRefl (A : U) (x : A) (p : Path A x x)
              (h : Path (Path S1 base base) loopS1 (refl S1 base)) :
              Path (Path A x x) p (refl A x) =
-        <i j> f A x p (h @ i @ j)
+      <i j> f A x p (h @ i @ j)
 
 data Suspension (A : U) =
     north
