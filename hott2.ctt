@@ -105,7 +105,6 @@ funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
       Path ((x : A) -> Path (B x) (f x) (g x)) (lem1 (funext p)) p = ?
 
 -- exercise 2.17
-
 pathTuple (A A' B B' : U)
   (pathA : Path U A A')
   (pathB : Path U B B') :
@@ -119,3 +118,33 @@ equivTuple (A A' B B' : U)
   idtoeqv (Tuple A B) (Tuple A' B')
           (pathTuple A A' B B' (ua A A' equivA)
                                (ua B B' equivB))
+
+binaryRelPath (A A' B B' : U)
+  (pathA : Path U A A')
+  (pathB : Path U B B')
+  (R : U -> U -> U) :
+  Path U (R A B) (R A' B') =
+  <i> R (pathA @ i) (pathB @ i)
+
+binaryRelEquiv (A A' B B' : U)
+  (equivA : Equiv A A')
+  (equivB : Equiv B B')
+  (R : U -> U -> U) :
+  Equiv (R A B) (R A' B') =
+  idtoeqv (R A B) (R A' B')
+          (binaryRelPath A A' B B'
+                         (ua A A' equivA)
+                         (ua B B' equivB)
+                         R)
+
+arrowEquiv (A A' B B' : U)
+  (equivA : Equiv A A')
+  (equivB : Equiv B B') :
+  Equiv (A -> B) (A' -> B') =
+  binaryRelEquiv A A' B B' equivA equivB (\(A B : U) -> (A -> B))
+
+coproductEquiv (A A' B B' : U)
+  (equivA : Equiv A A')
+  (equivB : Equiv B B') :
+  Equiv (Coproduct A B) (Coproduct A' B') =
+  binaryRelEquiv A A' B B' equivA equivB Coproduct
