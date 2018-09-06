@@ -105,22 +105,17 @@ funextFromHomotopy (A : U) (B : A -> U) (f g : (x : A) -> B x)
       Path ((x : A) -> Path (B x) (f x) (g x)) (lem1 (funext p)) p = ?
 
 -- exercise 2.17
+
+pathTuple (A A' B B' : U)
+  (pathA : Path U A A')
+  (pathB : Path U B B') :
+  Path U (Tuple A B) (Tuple A' B') =
+  <i> Tuple (pathA @ i) (pathB @ i)
+
 equivTuple (A A' B B' : U)
-  (equivA : BiinvEquiv A A')
-  (equivB : BiinvEquiv B B') :
-  BiinvEquiv (Tuple A B) (Tuple A' B') =
-  (lem1, pair (lem2, lem3) (lem2, ?))
-  where
-    lem1 : Tuple A B -> Tuple A' B' = split
-      pair a b -> pair (equivA.1 a) (equivB.1 b)
-    lem2 : Tuple A' B' -> Tuple A B = split
-      pair a' b' ->
-        let
-          f : A' -> A =
-            (pr1Tuple (linv A A' equivA.1)
-                      (rinv A A' equivA.1) equivA.2).1
-          g : B' -> B =
-            (pr1Tuple (linv B B' equivB.1)
-                      (rinv B B' equivB.1) equivB.2).1 in
-        pair (f a') (g b')
-    lem3 : (x : Tuple A' B') -> Path (Tuple A' B') (lem1 (lem2 x)) x = undefined
+  (equivA : Equiv A A')
+  (equivB : Equiv B B') :
+  Equiv (Tuple A B) (Tuple A' B') =
+  idtoeqv (Tuple A B) (Tuple A' B')
+          (pathTuple A A' B B' (ua A A' equivA)
+                               (ua B B' equivB))
