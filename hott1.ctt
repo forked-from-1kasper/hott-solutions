@@ -22,7 +22,6 @@ recExistsFromPr
   g (pr1Exists A B p) (pr2Exists A B p)
 
 -- exercise 1.3
-
 indTupleFromPr
   (A B : U) (C : Tuple A B -> U)
   (g : (x : A) -> (y : B) -> C (pair x y))
@@ -43,7 +42,6 @@ indExistsFromPr
             (g (pr1Exists A B x) (pr2Exists A B x))
 
 -- exercise 1.4
-
 iter (C : U) (c0 : C) (cs : C -> C) : N -> C = split
   zero -> c0
   succ n -> cs (iter C c0 cs n)
@@ -68,7 +66,6 @@ recNatIterEq (C : U) (c0 : C) (cs : N -> C -> C) : (n : N) ->
   succ n -> ?
 
 -- exercise 1.5
-
 CoproductB (A B : U) : U = (x : Bool) * (recBool U A B x)
 
 inlB (A B : U) (a : A) : CoproductB A B = (false, a)
@@ -83,7 +80,6 @@ indCoproductB (A B C : U) (C : CoproductB A B -> U)
           g0 g1 x.1 x.2
 
 -- exercise 1.6
-
 TupleB (A B : U) : U = (x : Bool) -> (recBool U A B x)
 
 pairB (A B : U) (a : A) (b : B) : TupleB A B = split
@@ -117,7 +113,6 @@ indTupleB (A B C : U) (C : TupleB A B -> U)
             (g (pr1TupleB A B x) (pr2TupleB A B x))
 
 -- exercise 1.8
-
 multRec : N -> N -> N =
   recNat (N -> N) (\(_ : N) -> zero)
          (\(n : N) (g : N -> N) (m : N) -> addRec m (g m))
@@ -277,23 +272,19 @@ semiringOverNat : isSemiring N =
 natSemiring : Semiring = (N, semiringOverNat)
 
 -- exercise 1.9
-
 Fin : N -> U = undefined
 
 -- exercise 1.10
-
 ack : N -> N -> N =
   recNat (N -> N) (\(n : N) -> succ n) -- wtf?
     (\(_ : N) (g : N -> N) ->
       recNat N (g (succ zero)) (\(_ : N) -> g))
 
 -- exercise 1.11
-
 tripleNegation (A : U) (h : not (not (not A))) : not A =
   \(x : A) -> h (\(g : A -> Empty) -> g x)
 
 -- exercise 1.12
-
 theorem1 (A B : U) : A -> B -> A =
   \(a : A) (b : B) -> a
 
@@ -305,17 +296,16 @@ theorem3 (A B : U) : Coproduct (not A) (not B) -> not (Tuple A B) = split
   inr b -> \(p : Tuple A B) -> b (pr2Tuple A B p)
 
 -- exercise 1.13
-
 notLEM (P : U) : not (not (Coproduct P (not P))) =
   \(h : not (Coproduct P (not P))) -> h (inr (\(x : P) -> h (inl x)))
 
 -- exercise 1.14
-
---f (A : U) (x : A) (p : Path A x x) : Path (Path A x x) p (refl A x) =
---  indPath A (\(x y : A) (p : Path A x y) -> ???)
+{-
+f (A : U) (x : A) (p : Path A x x) : Path (Path A x x) p (refl A x) =
+  indPath A (\(x y : A) (p : Path A x y) -> ???)
+-}
 
 -- exercise 1.15
-
 uniqPath (A : U) (C : A -> U) (x y : A) (p : Path A x y) (h : C x) : C y =
   indPath A (\(x y : A) (p : Path A x y) -> (C x -> C y))
           (\(x : A) -> idfun (C x)) x y p h

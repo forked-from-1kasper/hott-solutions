@@ -2,7 +2,6 @@ module hott5 where
 import definitions5
 
 -- exercise 5.11
-
 data Lost (A : U) =
   lostCons (head : A) (tail : Lost A)
 
