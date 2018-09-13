@@ -123,6 +123,11 @@ ap (A B : U) (f : A -> B) (x y : A)
    (p : Path A x y) : Path B (f x) (f y) =
    <i> f (p @ i)
 
+apd (A : U) (B : A -> U) (f : (a : A) -> B a)
+  (x y : A) (p : Path A x y) :
+  PathP (<i> B (p @ i)) (f x) (f y) =
+  <i> f (p @ i)
+
 apSymm (A B : U) (f : A -> B) (x y : A) (p : Path A x y) :
   Path (Path B (f y) (f x))
        (ap A B f y x (<i> p @ -i))
