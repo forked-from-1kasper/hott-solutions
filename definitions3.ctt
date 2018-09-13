@@ -47,13 +47,25 @@ universeNotSet : not (isSet U) =
     falseEqTrue (error : Path (Path U Bool Bool) p (refl U Bool)) :
       Path Bool false true = <i> transport (error @ i) true
 
-negationOfDoubleNegation (A : U) : not (not (not A) -> A) =
-  undefined
+negationOfDoubleNegation : not ((A : U) -> not (not A) -> A) =
+  \(h : (A : U) -> not (not A) -> A) -> ?
+  where
+    f : Bool -> Bool = split
+      false -> true
+      true -> false
+    fAp : (x : Bool) -> Path Bool (f (f x)) x = split
+      false -> refl Bool false
+      true -> refl Bool true
+    b : BiinvEquiv Bool Bool = (f, pair (f, fAp) (f, fAp))
+    e : Equiv Bool Bool = equivFromBiinvEquiv Bool Bool b
+    p : Path U Bool Bool = ua Bool Bool e
 
-negationOfLawOfExcludedMiddle (A : U) : not (Coproduct A (not A)) = split
-  inl a -> negationOfDoubleNegation A (\(h : (A -> Empty) -> Empty) -> a)
-  inr a -> negationOfDoubleNegation A (\(h : (A -> Empty) -> Empty) ->
-    recEmpty A (h a))
+negationOfLawOfExcludedMiddle : not ((A : U) -> Coproduct A (not A)) =
+  \(g : (A : U) -> Coproduct A (not A)) ->
+    negationOfDoubleNegation (\(A : U) (u : not (not A)) ->
+      recCoproduct A (not A) A
+                   (idfun A)
+                   (\(h : A -> Empty) -> recEmpty A (u h)) (g A))
 
 isProp (P : U) : U = (x y : P) -> (Path P x y)
 Prop : U = (P : U) * (isProp P)
