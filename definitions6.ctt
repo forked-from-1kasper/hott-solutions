@@ -46,9 +46,9 @@ circleIsNotTrivial : not (Path (Path S1 base base) loopS1 (refl S1 base)) =
 
 data Suspension (A : U) =
     north
-  | souce
+  | south
   | merid (a : A) <i>
-          [ (i = 0) -> north, (i = 1) -> souce ]
+          [ (i = 0) -> north, (i = 1) -> south ]
 
 SN : N -> U = split
   zero -> Bool
@@ -59,11 +59,11 @@ SuspensionOfEmptyEquivBool : BiinvEquiv (Suspension Empty) Bool =
   where
     f : Suspension Empty -> Bool = split
       north -> false
-      souce -> true
+      south -> true
       merid e @ i -> recEmpty (Path Bool false true) e @ i
     g : Bool -> Suspension Empty = split
       false -> north
-      true -> souce
+      true -> south
     lem1 : (x : Bool) -> Path Bool (f (g x)) x = split
       false -> refl Bool false
       true -> refl Bool true
